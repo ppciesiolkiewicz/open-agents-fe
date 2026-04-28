@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
+import { AgentEditDialog } from "@/components/AgentEditDialog";
 import { AgentRunControl } from "@/components/AgentRunControl";
 import { Chat } from "@/components/Chat";
 import { api } from "@/lib/api";
 import type { AgentConfig } from "@/sdk";
+import { IconButton } from "@/ui/IconButton";
+import { GearIcon } from "@/ui/icons";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -15,6 +18,7 @@ export default function AgentChatPage({ params }: PageProps) {
   const { id } = use(params);
   const [agent, setAgent] = useState<AgentConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,11 +50,29 @@ export default function AgentChatPage({ params }: PageProps) {
         )}
         {error && <span className="text-red-600">{error}</span>}
         <div className="flex-1" />
-        {agent && <AgentRunControl agent={agent} onChange={setAgent} />}
+        {agent && (
+          <>
+            <IconButton
+              aria-label="Edit agent"
+              icon={<GearIcon />}
+              size="sm"
+              onClick={() => setEditOpen(true)}
+            />
+            <AgentRunControl agent={agent} onChange={setAgent} />
+          </>
+        )}
       </nav>
       <div className="flex min-h-0 flex-1">
         <Chat agentId={id} agentName={agent?.name} />
       </div>
+      {agent && (
+        <AgentEditDialog
+          agent={agent}
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          onSaved={setAgent}
+        />
+      )}
     </div>
   );
 }
