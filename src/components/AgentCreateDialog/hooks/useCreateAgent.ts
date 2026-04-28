@@ -2,10 +2,10 @@
 
 import { useCallback, useState } from "react";
 import { api } from "@/lib/api";
-import type { AgentConfig, AgentsPostRequest } from "@/sdk";
+import type { AgentConfig, CreateAgentBody } from "@/sdk";
 
 interface UseCreateAgentResult {
-  create: (body: AgentsPostRequest) => Promise<AgentConfig | null>;
+  create: (body: CreateAgentBody) => Promise<AgentConfig | null>;
   creating: boolean;
   error: string | null;
 }
@@ -15,11 +15,11 @@ export function useCreateAgent(): UseCreateAgentResult {
   const [error, setError] = useState<string | null>(null);
 
   const create = useCallback(
-    async (body: AgentsPostRequest): Promise<AgentConfig | null> => {
+    async (body: CreateAgentBody): Promise<AgentConfig | null> => {
       setCreating(true);
       setError(null);
       try {
-        return await api.agentsPost(body);
+        return await api.agentsPost({ createAgentBody: body });
       } catch (e) {
         setError(e instanceof Error ? e.message : "Failed to create agent");
         return null;
