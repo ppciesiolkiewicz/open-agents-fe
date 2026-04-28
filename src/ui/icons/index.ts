@@ -1,1 +1,1 @@
-export { PlayIcon, StopIcon } from "./icons";
+export { PlayIcon, StopIcon, GearIcon } from "./icons";
