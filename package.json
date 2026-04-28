@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate:sdk": "openapi-generator-cli generate -g typescript-fetch -o src/sdk -i ${OPENAPI_URL:-http://localhost:8000/openapi.json}"
   },
   "dependencies": {
     "next": "16.2.4",
@@ -14,6 +15,7 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.31.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
