@@ -2,10 +2,11 @@
 
 import { cn } from "@/lib/cn";
 import type { Message } from "../../../types";
-import { ToolCallBlock } from "./ToolCallBlock";
+import { ToolCallDisplay } from "./ToolCallDisplay";
 
 interface MessageItemProps {
   message: Message;
+  resultsByCallId?: Map<string, string>;
 }
 
 const ROLE_LABEL: Record<Message["role"], string> = {
@@ -14,9 +15,11 @@ const ROLE_LABEL: Record<Message["role"], string> = {
   tool: "Tool",
 };
 
-export function MessageItem({ message }: MessageItemProps) {
+export function MessageItem({ message, resultsByCallId }: MessageItemProps) {
   const isUser = message.role === "user";
   const isTool = message.role === "tool";
+  const hasToolCalls = !!message.toolCalls && message.toolCalls.length > 0;
+  const hasContent = !!message.content;
 
   return (
     <div
@@ -30,7 +33,8 @@ export function MessageItem({ message }: MessageItemProps) {
       </span>
       <div
         className={cn(
-          "max-w-[85%] rounded-lg px-3 py-2 text-sm",
+          "max-w-[85%] rounded-lg text-sm",
+          hasContent || !hasToolCalls ? "px-3 py-2" : "p-2",
           isUser
             ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-50 dark:text-zinc-900"
             : isTool
@@ -38,13 +42,17 @@ export function MessageItem({ message }: MessageItemProps) {
               : "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50",
         )}
       >
-        {message.content && (
+        {hasContent && (
           <p className="whitespace-pre-wrap break-words">{message.content}</p>
         )}
-        {message.toolCalls && message.toolCalls.length > 0 && (
-          <div className="mt-2 flex flex-col gap-2">
-            {message.toolCalls.map((c) => (
-              <ToolCallBlock key={c.id} call={c} />
+        {hasToolCalls && (
+          <div className={cn("flex flex-col gap-2", hasContent && "mt-2")}>
+            {message.toolCalls!.map((c) => (
+              <ToolCallDisplay
+                key={c.id}
+                call={c}
+                resultJson={resultsByCallId?.get(c.id)}
+              />
             ))}
           </div>
         )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { ScrollArea } from "@/ui/ScrollArea";
 import type { Message } from "../../types";
 import { MessageItem } from "./components/MessageItem";
@@ -12,6 +12,19 @@ export interface MessageListProps {
 
 export function MessageList({ messages, emptyHint }: MessageListProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
+
+  const { renderable, resultsByCallId } = useMemo(() => {
+    const resultsByCallId = new Map<string, string>();
+    for (const m of messages) {
+      if (m.role === "tool" && m.toolCallId) {
+        resultsByCallId.set(m.toolCallId, m.content);
+      }
+    }
+    const renderable = messages.filter(
+      (m) => !(m.role === "tool" && m.toolCallId && resultsByCallId.has(m.toolCallId)),
+    );
+    return { renderable, resultsByCallId };
+  }, [messages]);
 
   useEffect(() => {
     const el = viewportRef.current;
@@ -30,8 +43,12 @@ export function MessageList({ messages, emptyHint }: MessageListProps) {
   return (
     <ScrollArea ref={viewportRef} className="flex-1">
       <div className="flex flex-col gap-4 p-4">
-        {messages.map((m) => (
-          <MessageItem key={`${m.tickId}:${m.seq}`} message={m} />
+        {renderable.map((m) => (
+          <MessageItem
+            key={`${m.tickId}:${m.seq}`}
+            message={m}
+            resultsByCallId={resultsByCallId}
+          />
         ))}
       </div>
     </ScrollArea>
