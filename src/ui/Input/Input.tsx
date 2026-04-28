@@ -24,6 +24,9 @@ export interface InputProps
     | "className"
     | "aria-label"
     | "aria-invalid"
+    | "min"
+    | "max"
+    | "step"
   > {
   invalid?: boolean;
 }
