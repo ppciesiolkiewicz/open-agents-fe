@@ -24,7 +24,7 @@ export function Dialog({
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
       <RadixDialog.Portal>
-        <RadixDialog.Overlay className="fixed inset-0 z-40 bg-black/40 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <RadixDialog.Overlay className="fixed inset-0 z-40 bg-black/40" />
         <RadixDialog.Content
           className={cn(
             "fixed left-1/2 top-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2",
@@ -34,7 +34,15 @@ export function Dialog({
             className,
           )}
         >
-          <div className="mb-4 flex flex-col gap-1">
+          <RadixDialog.Close
+            aria-label="Close"
+            className="absolute right-3 top-3 inline-flex size-7 items-center justify-center rounded-md text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+          >
+            <span aria-hidden="true" className="text-base leading-none">
+              ×
+            </span>
+          </RadixDialog.Close>
+          <div className="mb-4 flex flex-col gap-1 pr-8">
             <RadixDialog.Title className="text-base font-semibold">
               {title}
             </RadixDialog.Title>
