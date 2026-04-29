@@ -1,2 +1,7 @@
 export { cn } from "./cn";
-export { api, API_BASE_URL } from "./api";
+export {
+  api,
+  API_BASE_URL,
+  getApiAccessToken,
+  setApiAccessTokenGetter,
+} from "./api";
