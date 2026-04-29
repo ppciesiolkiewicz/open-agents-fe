@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { buildTransakUrl } from "@/lib/transak";
+import { truncateAmount } from "@/lib/formatBalance";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { IconButton } from "@/ui/IconButton";
@@ -20,7 +21,7 @@ function Balances({ balances }: { balances: WalletBalances }) {
           USDC on Unichain
         </span>
         <span className="font-mono text-xs text-zinc-900 dark:text-zinc-100">
-          {balances.usdcOnUnichain.formatted} USDC
+          {truncateAmount(balances.usdcOnUnichain.formatted)} USDC
         </span>
       </div>
       <div className="flex items-center justify-between gap-4">
@@ -28,7 +29,7 @@ function Balances({ balances }: { balances: WalletBalances }) {
           0G on Zerog
         </span>
         <span className="font-mono text-xs text-zinc-900 dark:text-zinc-100">
-          {balances.ogOnZerog.formatted} 0G
+          {truncateAmount(balances.ogOnZerog.formatted)} 0G
           <span className="ml-1 text-zinc-400 dark:text-zinc-500">
             (${balances.ogOnZerog.valueUsd.toFixed(2)})
           </span>

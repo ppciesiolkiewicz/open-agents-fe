@@ -7,6 +7,7 @@ import { Dropdown, DropdownItem } from "@/ui/Dropdown";
 import { IconButton } from "@/ui/IconButton";
 import { CheckIcon, CopyIcon, WalletIcon } from "@/ui/icons";
 import { cn } from "@/lib/cn";
+import { truncateAmount } from "@/lib/formatBalance";
 import { toast } from "@/ui/Toast";
 
 function BalanceRow({
@@ -117,12 +118,12 @@ export function UserMenu() {
             <div className="flex flex-col gap-0.5 px-2 py-1.5">
               <BalanceRow
                 label="USDC"
-                amount={walletObj.balances.usdcOnUnichain.formatted}
+                amount={truncateAmount(walletObj.balances.usdcOnUnichain.formatted)}
                 unit="USDC"
               />
               <BalanceRow
                 label="0G"
-                amount={walletObj.balances.ogOnZerog.formatted}
+                amount={truncateAmount(walletObj.balances.ogOnZerog.formatted)}
                 unit="0G"
                 valueUsd={walletObj.balances.ogOnZerog.valueUsd}
               />

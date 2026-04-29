@@ -4,6 +4,7 @@ import Link from "next/link";
 import { use, useEffect, useState } from "react";
 import { AgentEditDialog } from "@/components/AgentEditDialog";
 import { AgentRunControl } from "@/components/AgentRunControl";
+import { BalancePill } from "@/components/BalancePill";
 import { Chat } from "@/components/Chat";
 import { TopUpButton } from "@/components/TopUpButton";
 import { UserMenu } from "@/components/UserMenu";
@@ -64,6 +65,7 @@ export default function AgentChatPage({ params }: PageProps) {
             <AgentRunControl agent={agent} onChange={setAgent} size="lg" />
           </>
         )}
+        <BalancePill />
         <TopUpButton />
         <UserMenu />
       </nav>
