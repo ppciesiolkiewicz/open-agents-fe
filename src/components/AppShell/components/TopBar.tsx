@@ -12,7 +12,7 @@ export function TopBar() {
         href="/agents"
         className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100"
       >
-        Open Agents
+        Cadence
       </Link>
       <div className="flex items-center gap-2">
         <BalancePill />

@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Open Agents",
-  description: "Chat with Open Agents",
+  title: "Cadence",
+  description: "Chat with Cadence agents",
 };
 
 export default function RootLayout({
