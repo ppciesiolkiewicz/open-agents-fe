@@ -69,8 +69,8 @@ export function UserMenu() {
         <IconButton
           aria-label="Account menu"
           icon={<WalletIcon />}
-          size="md"
-          variant="ghost"
+          size="lg"
+          variant="secondary"
           className="cursor-pointer"
         />
       }
