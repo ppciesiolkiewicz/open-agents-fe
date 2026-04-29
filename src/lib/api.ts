@@ -18,6 +18,16 @@ export async function getApiAccessToken(): Promise<string | null> {
 export const api = new DefaultApi(
   new Configuration({
     basePath: API_BASE_URL,
-    accessToken: async () => (await getToken()) ?? "",
+    middleware: [
+      {
+        pre: async ({ url, init }) => {
+          const token = await getToken();
+          if (!token) return { url, init };
+          const headers = new Headers(init.headers);
+          headers.set("Authorization", `Bearer ${token}`);
+          return { url, init: { ...init, headers } };
+        },
+      },
+    ],
   }),
 );
