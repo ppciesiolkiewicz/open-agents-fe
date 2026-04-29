@@ -15,11 +15,11 @@ export interface AgentCardProps {
 export function AgentCard({ agent: initial }: AgentCardProps) {
   const [agent, setAgent] = useState(initial);
 
-  const lastSeen = formatRelativeSeconds(agent.lastTickAt ?? null);
-  const interval = formatInterval(agent.intervalMs);
+  const lastSeen = formatRelativeSeconds(agent.lastTickAt ?? null) ?? "—";
+  const interval = formatInterval(agent.intervalMs) ?? "—";
 
   return (
-    <Card interactive className="relative">
+    <Card interactive className="relative h-full w-full gap-4">
       <Link
         href={`/agents/${agent.id}`}
         aria-label={`Open ${agent.name}`}
@@ -39,11 +39,11 @@ export function AgentCard({ agent: initial }: AgentCardProps) {
         }
       />
 
-      <p className="line-clamp-3 text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="line-clamp-3 min-h-15 text-sm text-zinc-600 dark:text-zinc-400">
         {agent.prompt}
       </p>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="mt-auto grid grid-cols-2 gap-3">
         <CardField
           label="Max trade"
           value={`$${agent.riskLimits.maxTradeUSD}`}
@@ -52,8 +52,8 @@ export function AgentCard({ agent: initial }: AgentCardProps) {
           label="Slippage"
           value={`${agent.riskLimits.maxSlippageBps} bps`}
         />
-        {interval && <CardField label="Interval" value={interval} />}
-        {lastSeen && <CardField label="Last activity" value={lastSeen} />}
+        <CardField label="Interval" value={interval} />
+        <CardField label="Last activity" value={lastSeen} />
       </div>
     </Card>
   );
