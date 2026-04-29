@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useLogout, usePrivy } from "@privy-io/react-auth";
 import { useMe } from "@/components/AuthGate";
+import { TransactionsDialog } from "@/components/Transactions";
 import { Dropdown, DropdownItem } from "@/ui/Dropdown";
 import { IconButton } from "@/ui/IconButton";
 import { CheckIcon, CopyIcon, WalletIcon } from "@/ui/icons";
@@ -46,6 +47,7 @@ export function UserMenu() {
   const { logout } = useLogout();
   const me = useMe();
   const [copied, setCopied] = useState(false);
+  const [transactionsOpen, setTransactionsOpen] = useState(false);
 
   if (!ready || !authenticated) return null;
 
@@ -138,7 +140,14 @@ export function UserMenu() {
 
       <div className="my-1 h-px bg-zinc-200 dark:bg-zinc-800" />
 
+      <DropdownItem onSelect={() => setTransactionsOpen(true)}>
+        Transactions
+      </DropdownItem>
       <DropdownItem onSelect={() => void logout()}>Sign out</DropdownItem>
+      <TransactionsDialog
+        open={transactionsOpen}
+        onOpenChange={setTransactionsOpen}
+      />
     </Dropdown>
   );
 }

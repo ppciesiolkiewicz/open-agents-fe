@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { api } from "@/lib/api";
+import { useTransactions } from "@/components/Transactions";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { NumberInput } from "@/ui/NumberInput";
@@ -20,6 +21,7 @@ function shortHash(hash: string): string {
 export function BuyCreditsCard() {
   const [amount, setAmount] = useState<number | null>(null);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
+  const { trackNewDeposit } = useTransactions();
 
   async function handleSubmit() {
     if (amount === null || amount <= 0) return;
@@ -29,6 +31,7 @@ export function BuyCreditsCard() {
         treasuryDepositBody: { amount: String(amount) },
       });
       setStatus({ kind: "success", txHash: res.txHash });
+      void trackNewDeposit();
     } catch (e) {
       setStatus({
         kind: "error",
