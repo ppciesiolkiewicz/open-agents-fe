@@ -1,11 +1,44 @@
 "use client";
 
 import { useState } from "react";
+import { api } from "@/lib/api";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
+import { NumberInput } from "@/ui/NumberInput";
+
+type Status =
+  | { kind: "idle" }
+  | { kind: "loading" }
+  | { kind: "success"; txHash: string }
+  | { kind: "error"; message: string };
+
+function shortHash(hash: string): string {
+  if (hash.length <= 14) return hash;
+  return `${hash.slice(0, 8)}…${hash.slice(-6)}`;
+}
 
 export function BuyCreditsCard() {
-  const [clicked, setClicked] = useState(false);
+  const [amount, setAmount] = useState<number | null>(null);
+  const [status, setStatus] = useState<Status>({ kind: "idle" });
+
+  async function handleSubmit() {
+    if (amount === null || amount <= 0) return;
+    setStatus({ kind: "loading" });
+    try {
+      const res = await api.usersMeTreasuryDepositPost({
+        treasuryDepositBody: { amount: String(amount) },
+      });
+      setStatus({ kind: "success", txHash: res.txHash });
+    } catch (e) {
+      setStatus({
+        kind: "error",
+        message: e instanceof Error ? e.message : "Deposit failed",
+      });
+    }
+  }
+
+  const submitDisabled =
+    status.kind === "loading" || amount === null || amount <= 0;
 
   return (
     <Card className="gap-3">
@@ -19,12 +52,35 @@ export function BuyCreditsCard() {
         Convert your USDC into AI computation credits to run agents.
       </p>
       <div className="flex flex-col gap-2">
-        <Button variant="secondary" onClick={() => setClicked(true)}>
-          Buy AI credits
-        </Button>
-        {clicked && (
-          <p className="text-xs text-zinc-400">
-            Coming soon — this feature is on its way.
+        <div className="flex items-center gap-2">
+          <NumberInput
+            value={amount}
+            onChange={setAmount}
+            min={0}
+            step={1}
+            placeholder="Amount in USDC"
+            aria-label="Amount in USDC"
+            disabled={status.kind === "loading"}
+            className="flex-1"
+          />
+          <Button
+            variant="secondary"
+            onClick={() => void handleSubmit()}
+            disabled={submitDisabled}
+            loading={status.kind === "loading"}
+          >
+            Buy AI credits
+          </Button>
+        </div>
+        {status.kind === "success" && (
+          <p className="text-xs text-emerald-600 dark:text-emerald-400">
+            Purchase submitted — credits will appear shortly. Tx{" "}
+            <span className="font-mono">{shortHash(status.txHash)}</span>
+          </p>
+        )}
+        {status.kind === "error" && (
+          <p className="text-xs text-red-600 dark:text-red-400">
+            {status.message}
           </p>
         )}
       </div>
