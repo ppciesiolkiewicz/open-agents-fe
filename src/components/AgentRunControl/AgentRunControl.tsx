@@ -9,7 +9,7 @@ import { PlayIcon, StopIcon } from "@/ui/icons";
 export interface AgentRunControlProps {
   agent: AgentConfig;
   onChange?: (next: AgentConfig) => void;
-  size?: "sm" | "md";
+  size?: "sm" | "md" | "lg";
 }
 
 export function AgentRunControl({

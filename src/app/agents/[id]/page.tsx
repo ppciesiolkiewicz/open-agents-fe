@@ -57,10 +57,11 @@ export default function AgentChatPage({ params }: PageProps) {
             <IconButton
               aria-label="Edit agent"
               icon={<GearIcon />}
-              size="sm"
+              size="lg"
+              variant="secondary"
               onClick={() => setEditOpen(true)}
             />
-            <AgentRunControl agent={agent} onChange={setAgent} />
+            <AgentRunControl agent={agent} onChange={setAgent} size="lg" />
           </>
         )}
         <TopUpButton />

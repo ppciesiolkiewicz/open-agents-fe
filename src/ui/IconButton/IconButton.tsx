@@ -42,7 +42,7 @@ const VARIANTS: Record<Variant, string> = {
 const SIZES: Record<Size, string> = {
   sm: "size-7 [&_svg]:size-3.5",
   md: "size-9 [&_svg]:size-4",
-  lg: "size-10 [&_svg]:size-4",
+  lg: "size-10 [&_svg]:size-5",
 };
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
