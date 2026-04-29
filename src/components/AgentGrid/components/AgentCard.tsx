@@ -23,7 +23,7 @@ export function AgentCard({ agent: initial }: AgentCardProps) {
       <Link
         href={`/agents/${agent.id}`}
         aria-label={`Open ${agent.name}`}
-        className="absolute inset-0 z-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
+        className="absolute inset-0 z-0 cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
       />
 
       <CardHeader

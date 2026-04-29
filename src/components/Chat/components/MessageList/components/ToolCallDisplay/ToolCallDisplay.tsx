@@ -30,7 +30,7 @@ export function ToolCallDisplay({ call, resultJson }: ToolCallDisplayProps) {
         <button
           type="button"
           onClick={() => setShowRaw((v) => !v)}
-          className="text-[10px] uppercase tracking-wide text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+          className="cursor-pointer text-[10px] uppercase tracking-wide text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
         >
           {showRaw ? "hide raw" : "raw"}
         </button>

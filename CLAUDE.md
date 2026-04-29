@@ -101,6 +101,14 @@ Configure in [tsconfig.json](tsconfig.json) `compilerOptions.paths`. Same-folder
 - Utils, types, constants: `camelCase` (`parseSSE.ts`, `types.ts`).
 - Route files (Next.js): lowercase as the framework requires (`page.tsx`, `layout.tsx`).
 
+## Interactive elements
+
+Anything the user can click — buttons, links, custom rows, interactive cards — must show `cursor: pointer` on hover. Tailwind's preflight resets `<button>` to `cursor: default`, so this is not free.
+
+- Atoms with built-in click semantics (`Button`, `IconButton`, `Card` when `interactive`, `DropdownItem`) bake `cursor-pointer` into their base classes — consumers don't need to repeat it.
+- Bare `<button>` / `<a>` / `<div role="button">` written in domain components must include `cursor-pointer` in their `className`. Same for stretched-link `<Link>` overlays.
+- The `disabled:cursor-not-allowed` rule still applies and beats `cursor-pointer` when the element is disabled.
+
 ## What goes where — quick test
 
 Before placing a file, ask:
