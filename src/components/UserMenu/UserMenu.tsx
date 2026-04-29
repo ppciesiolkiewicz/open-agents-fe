@@ -7,6 +7,7 @@ import { Dropdown, DropdownItem } from "@/ui/Dropdown";
 import { IconButton } from "@/ui/IconButton";
 import { CheckIcon, CopyIcon, WalletIcon } from "@/ui/icons";
 import { cn } from "@/lib/cn";
+import { toast } from "@/ui/Toast";
 
 function shortAddress(address: string): string {
   if (address.length <= 14) return address;
@@ -30,6 +31,7 @@ export function UserMenu() {
       await navigator.clipboard.writeText(wallet);
       setCopied(true);
       setTimeout(() => setCopied(false), 1200);
+      toast("Wallet address copied");
     } catch {
       /* ignore — clipboard may be blocked */
     }
@@ -41,7 +43,7 @@ export function UserMenu() {
         <IconButton
           aria-label="Account menu"
           icon={<WalletIcon />}
-          size="sm"
+          size="md"
           variant="ghost"
           className="cursor-pointer"
         />
