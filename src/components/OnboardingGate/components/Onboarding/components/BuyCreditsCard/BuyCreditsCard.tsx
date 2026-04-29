@@ -57,7 +57,7 @@ export function BuyCreditsCard() {
             value={amount}
             onChange={setAmount}
             min={0}
-            step={1}
+            step={0.000001}
             placeholder="Amount in USDC"
             aria-label="Amount in USDC"
             disabled={status.kind === "loading"}
