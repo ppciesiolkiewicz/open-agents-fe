@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { AppShell } from "@/components/AppShell";
 import { AuthProvider } from "@/components/AuthProvider";
 import { AuthGate } from "@/components/AuthGate";
 import { Toaster } from "@/ui/Toast";
@@ -32,7 +33,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <AuthProvider>
-          <AuthGate>{children}</AuthGate>
+          <AuthGate>
+            <AppShell>{children}</AppShell>
+          </AuthGate>
         </AuthProvider>
         <Toaster />
       </body>

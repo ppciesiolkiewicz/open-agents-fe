@@ -3,9 +3,6 @@
 import { useState } from "react";
 import { AgentCreateDialog } from "@/components/AgentCreateDialog";
 import { AgentGrid } from "@/components/AgentGrid";
-import { BalancePill } from "@/components/BalancePill";
-import { TopUpButton } from "@/components/TopUpButton";
-import { UserMenu } from "@/components/UserMenu";
 import { Button } from "@/ui/Button";
 
 export default function AgentsPage() {
@@ -20,12 +17,7 @@ export default function AgentsPage() {
             Pick an agent to chat with or inspect its activity.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button onClick={() => setCreateOpen(true)}>+ New agent</Button>
-          <BalancePill />
-          <TopUpButton />
-          <UserMenu />
-        </div>
+        <Button onClick={() => setCreateOpen(true)}>+ New agent</Button>
       </header>
       <AgentGrid />
       <AgentCreateDialog open={createOpen} onOpenChange={setCreateOpen} />
