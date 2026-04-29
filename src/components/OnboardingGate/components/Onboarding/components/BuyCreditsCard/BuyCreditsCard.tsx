@@ -46,10 +46,10 @@ export function BuyCreditsCard() {
         <span className="text-xs font-medium uppercase tracking-wide text-zinc-400">
           Step 2
         </span>
-        <h3 className="text-base font-semibold">Buy AI computation credits</h3>
+        <h3 className="text-base font-semibold">Buy AI tokens (0G)</h3>
       </div>
       <p className="text-sm text-zinc-500 dark:text-zinc-400">
-        Convert your USDC into AI computation credits to run agents.
+        Convert your USDC into AI tokens (0G) to run agents.
       </p>
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2">
@@ -69,12 +69,12 @@ export function BuyCreditsCard() {
             disabled={submitDisabled}
             loading={status.kind === "loading"}
           >
-            Buy AI credits
+            Buy AI tokens
           </Button>
         </div>
         {status.kind === "success" && (
           <p className="text-xs text-emerald-600 dark:text-emerald-400">
-            Purchase submitted — credits will appear shortly. Tx{" "}
+            Purchase submitted — AI tokens will appear shortly. Tx{" "}
             <span className="font-mono">{shortHash(status.txHash)}</span>
           </p>
         )}

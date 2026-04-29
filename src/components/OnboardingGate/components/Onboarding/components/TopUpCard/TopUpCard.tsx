@@ -6,10 +6,36 @@ import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { IconButton } from "@/ui/IconButton";
 import { CheckIcon, CopyIcon } from "@/ui/icons";
-import type { MeWallet } from "@/lib/userApi";
+import type { MeWallet, WalletBalances } from "@/lib/userApi";
 
 export interface TopUpCardProps {
   wallet: MeWallet | null;
+}
+
+function Balances({ balances }: { balances: WalletBalances }) {
+  return (
+    <div className="flex flex-col gap-1 rounded-md bg-zinc-50 px-3 py-2 dark:bg-zinc-900">
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-xs text-zinc-500 dark:text-zinc-400">
+          USDC on Unichain
+        </span>
+        <span className="font-mono text-xs text-zinc-900 dark:text-zinc-100">
+          {balances.usdcOnUnichain.formatted} USDC
+        </span>
+      </div>
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-xs text-zinc-500 dark:text-zinc-400">
+          0G on Zerog
+        </span>
+        <span className="font-mono text-xs text-zinc-900 dark:text-zinc-100">
+          {balances.ogOnZerog.formatted} 0G
+          <span className="ml-1 text-zinc-400 dark:text-zinc-500">
+            (${balances.ogOnZerog.valueUsd.toFixed(2)})
+          </span>
+        </span>
+      </div>
+    </div>
+  );
 }
 
 export function TopUpCard({ wallet }: TopUpCardProps) {
@@ -64,6 +90,7 @@ export function TopUpCard({ wallet }: TopUpCardProps) {
         ) : (
           <p className="text-xs text-zinc-400">Wallet address loading…</p>
         )}
+        {wallet?.balances && <Balances balances={wallet.balances} />}
       </div>
     </Card>
   );
