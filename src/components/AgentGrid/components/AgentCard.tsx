@@ -6,11 +6,7 @@ import { AgentRunControl } from "@/components/AgentRunControl";
 import { Badge } from "@/ui/Badge";
 import { Card, CardField, CardHeader } from "@/ui/Card";
 import type { AgentConfig } from "@/sdk";
-import {
-  formatInterval,
-  formatRelativeSeconds,
-  shortAddress,
-} from "../utils/format";
+import { formatInterval, formatRelativeSeconds } from "../utils/format";
 
 export interface AgentCardProps {
   agent: AgentConfig;
@@ -32,7 +28,6 @@ export function AgentCard({ agent: initial }: AgentCardProps) {
 
       <CardHeader
         title={agent.name}
-        subtitle={shortAddress(agent.walletAddress)}
         action={
           <div className="relative z-10 flex items-center gap-2">
             <Badge tone={agent.running ? "success" : "neutral"}>

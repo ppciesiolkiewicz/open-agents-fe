@@ -20,7 +20,6 @@ export interface AgentCreateFormProps {
 interface FormState {
   name: string;
   prompt: string;
-  walletAddress: string;
   dryRun: boolean;
   dryRunSeedBalances: Record<string, string>;
   maxTradeUSD: number | null;
@@ -31,7 +30,6 @@ interface FormState {
 interface FormErrors {
   name?: string;
   prompt?: string;
-  walletAddress?: string;
   maxTradeUSD?: string;
   maxSlippageBps?: string;
   intervalMs?: string;
@@ -41,7 +39,6 @@ interface FormErrors {
 const INITIAL: FormState = {
   name: "",
   prompt: "",
-  walletAddress: "",
   dryRun: true,
   dryRunSeedBalances: {},
   maxTradeUSD: 100,
@@ -53,7 +50,6 @@ function validate(state: FormState): FormErrors {
   const errors: FormErrors = {};
   if (!state.name.trim()) errors.name = "Required";
   if (!state.prompt.trim()) errors.prompt = "Required";
-  if (!state.walletAddress.trim()) errors.walletAddress = "Required";
   if (state.maxTradeUSD === null || state.maxTradeUSD <= 0)
     errors.maxTradeUSD = "Must be greater than 0";
   if (
@@ -95,7 +91,6 @@ export function AgentCreateForm({
     const body: CreateAgentBody = {
       name: state.name.trim(),
       prompt: state.prompt.trim(),
-      walletAddress: state.walletAddress.trim(),
       dryRun: state.dryRun,
       dryRunSeedBalances: state.dryRun
         ? state.dryRunSeedBalances
@@ -127,21 +122,6 @@ export function AgentCreateForm({
           value={state.prompt}
           onChange={(e) =>
             setState((s) => ({ ...s, prompt: e.target.value }))
-          }
-          disabled={creating}
-        />
-      </Field>
-
-      <Field
-        label="Wallet address"
-        htmlFor="create-wallet"
-        error={errors.walletAddress}
-      >
-        <Input
-          id="create-wallet"
-          value={state.walletAddress}
-          onChange={(e) =>
-            setState((s) => ({ ...s, walletAddress: e.target.value }))
           }
           disabled={creating}
         />
