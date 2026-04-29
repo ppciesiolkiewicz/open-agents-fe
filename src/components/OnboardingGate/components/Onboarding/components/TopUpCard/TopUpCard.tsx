@@ -34,29 +34,32 @@ export function TopUpCard({ wallet }: TopUpCardProps) {
         Send USDC to your account on Unichain to fund your agents.
       </p>
       <div className="flex flex-col gap-2">
-        <a
-          href={wallet ? buildTransakUrl(wallet.walletAddress) : undefined}
-          target="_blank"
-          rel="noopener noreferrer"
-          tabIndex={-1}
-        >
-          <Button disabled={!wallet} className="w-full">
+        {wallet ? (
+          <Button asChild className="w-full">
+            <a
+              href={buildTransakUrl(wallet.walletAddress)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Top up with USDC
+            </a>
+          </Button>
+        ) : (
+          <Button disabled className="w-full">
             Top up with USDC
           </Button>
-        </a>
+        )}
         {wallet ? (
           <div className="flex items-center gap-1.5">
             <span className="flex-1 truncate font-mono text-xs text-zinc-500 dark:text-zinc-400">
               {wallet.walletAddress}
             </span>
-            {typeof navigator !== "undefined" && navigator.clipboard && (
-              <IconButton
-                aria-label={copied ? "Copied" : "Copy wallet address"}
-                icon={copied ? <CheckIcon /> : <CopyIcon />}
-                size="sm"
-                onClick={() => void handleCopy()}
-              />
-            )}
+            <IconButton
+              aria-label={copied ? "Copied" : "Copy wallet address"}
+              icon={copied ? <CheckIcon /> : <CopyIcon />}
+              size="sm"
+              onClick={() => void handleCopy()}
+            />
           </div>
         ) : (
           <p className="text-xs text-zinc-400">Wallet address loading…</p>
