@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { Button } from "@/ui/Button";
+import { MeProvider } from "../../MeContext";
 import { useUserBootstrap } from "../../hooks/useUserBootstrap";
 
 export interface EnsureUserWalletProps {
@@ -9,10 +10,10 @@ export interface EnsureUserWalletProps {
 }
 
 export function EnsureUserWallet({ children }: EnsureUserWalletProps) {
-  const { status, error, retry } = useUserBootstrap(true);
+  const { status, error, me, retry } = useUserBootstrap(true);
 
   return (
-    <>
+    <MeProvider value={me}>
       {status === "error" && error && (
         <div className="flex items-center justify-between gap-3 border-b border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
           <span>Wallet bootstrap failed: {error}</span>
@@ -22,6 +23,6 @@ export function EnsureUserWallet({ children }: EnsureUserWalletProps) {
         </div>
       )}
       {children}
-    </>
+    </MeProvider>
   );
 }

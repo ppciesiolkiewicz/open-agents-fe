@@ -2,18 +2,21 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { fetchUserMe, postUserWallet } from "@/lib/userApi";
+import type { MeResponse } from "@/lib/userApi";
 
 export type BootstrapStatus = "idle" | "loading" | "ready" | "error";
 
 interface UseUserBootstrapResult {
   status: BootstrapStatus;
   error: string | null;
+  me: MeResponse | null;
   retry: () => void;
 }
 
 export function useUserBootstrap(enabled: boolean): UseUserBootstrapResult {
   const [status, setStatus] = useState<BootstrapStatus>("idle");
   const [error, setError] = useState<string | null>(null);
+  const [me, setMe] = useState<MeResponse | null>(null);
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
@@ -25,13 +28,17 @@ export function useUserBootstrap(enabled: boolean): UseUserBootstrapResult {
       setStatus("loading");
       setError(null);
       try {
-        const me = await fetchUserMe();
+        let next = await fetchUserMe();
         if (cancelled) return;
-        const hasPrimary = me.wallets.some((w) => w.isPrimary);
+        const hasPrimary = next.wallets.some((w) => w.isPrimary);
         if (!hasPrimary) {
           await postUserWallet();
+          if (cancelled) return;
+          next = await fetchUserMe();
+          if (cancelled) return;
         }
-        if (!cancelled) setStatus("ready");
+        setMe(next);
+        setStatus("ready");
       } catch (e) {
         if (cancelled) return;
         setError(e instanceof Error ? e.message : "Bootstrap failed");
@@ -46,5 +53,5 @@ export function useUserBootstrap(enabled: boolean): UseUserBootstrapResult {
 
   const retry = useCallback(() => setTick((n) => n + 1), []);
 
-  return { status, error, retry };
+  return { status, error, me, retry };
 }
