@@ -9,6 +9,8 @@ if (!APP_ID && process.env.NODE_ENV !== "test") {
 export const PRIVY_APP_ID = APP_ID ?? "";
 
 export const PRIVY_CONFIG = {
-  embeddedWallets: { createOnLogin: "off" as const },
+  embeddedWallets: {
+    ethereum: { createOnLogin: "off" as const },
+  },
   appearance: { theme: "light" as const },
 };
