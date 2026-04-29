@@ -7,11 +7,27 @@ export interface MeUser {
   createdAt: number;
 }
 
+export interface WalletBalanceItem {
+  raw: string;
+  formatted: string;
+}
+
+export interface OgBalance extends WalletBalanceItem {
+  priceUsd: number;
+  valueUsd: number;
+}
+
+export interface WalletBalances {
+  usdcOnUnichain: WalletBalanceItem;
+  ogOnZerog: OgBalance;
+}
+
 export interface MeWallet {
   id: string;
   walletAddress: string;
   isPrimary: boolean;
   createdAt: number;
+  balances: WalletBalances | null;
 }
 
 export interface MeResponse {
