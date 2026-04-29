@@ -3,6 +3,7 @@
 import { usePrivy } from "@privy-io/react-auth";
 import type { ReactNode } from "react";
 import { Spinner } from "@/ui/Spinner";
+import { OnboardingGate } from "@/components/OnboardingGate";
 import { EnsureUserWallet } from "./components/EnsureUserWallet";
 import { SignIn } from "./components/SignIn";
 
@@ -23,5 +24,9 @@ export function AuthGate({ children }: AuthGateProps) {
 
   if (!authenticated) return <SignIn />;
 
-  return <EnsureUserWallet>{children}</EnsureUserWallet>;
+  return (
+    <EnsureUserWallet>
+      <OnboardingGate>{children}</OnboardingGate>
+    </EnsureUserWallet>
+  );
 }
