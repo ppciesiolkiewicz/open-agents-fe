@@ -24,7 +24,7 @@ interface FormState {
   dryRunSeedBalances: Record<string, string>;
   maxTradeUSD: number | null;
   maxSlippageBps: number | null;
-  intervalMs: number | null;
+  intervalMin: number | null;
 }
 
 interface FormErrors {
@@ -32,7 +32,7 @@ interface FormErrors {
   prompt?: string;
   maxTradeUSD?: string;
   maxSlippageBps?: string;
-  intervalMs?: string;
+  intervalMin?: string;
   dryRunSeedBalances?: string;
 }
 
@@ -43,7 +43,7 @@ const INITIAL: FormState = {
   dryRunSeedBalances: {},
   maxTradeUSD: 100,
   maxSlippageBps: 50,
-  intervalMs: null,
+  intervalMin: 5,
 };
 
 function validate(state: FormState): FormErrors {
@@ -60,10 +60,11 @@ function validate(state: FormState): FormErrors {
   )
     errors.maxSlippageBps = "Integer between 0 and 10000";
   if (
-    state.intervalMs !== null &&
-    (!Number.isInteger(state.intervalMs) || state.intervalMs < 1000)
+    state.intervalMin === null ||
+    !Number.isFinite(state.intervalMin) ||
+    state.intervalMin < 1
   )
-    errors.intervalMs = "Integer ≥ 1000ms or empty";
+    errors.intervalMin = "At least 1 minute";
   if (state.dryRun) {
     for (const [token, amount] of Object.entries(state.dryRunSeedBalances)) {
       if (!token.trim() || !amount.trim()) {
@@ -99,7 +100,7 @@ export function AgentCreateForm({
         maxTradeUSD: state.maxTradeUSD!,
         maxSlippageBps: state.maxSlippageBps!,
       },
-      intervalMs: state.intervalMs ?? undefined,
+      intervalMs: Math.round(state.intervalMin! * 60_000),
     };
     onSubmit(body);
   }
@@ -115,7 +116,12 @@ export function AgentCreateForm({
         />
       </Field>
 
-      <Field label="Prompt" htmlFor="create-prompt" error={errors.prompt}>
+      <Field
+        label="System prompt"
+        htmlFor="create-prompt"
+        error={errors.prompt}
+        helper="What this agent should do — its role, goals, and any constraints. Sent at the start of every run."
+      >
         <Textarea
           id="create-prompt"
           rows={5}
@@ -160,16 +166,17 @@ export function AgentCreateForm({
       </div>
 
       <Field
-        label="Interval (ms) — leave empty for chat-only"
+        label="Interval (min)"
         htmlFor="create-interval"
-        error={errors.intervalMs}
+        error={errors.intervalMin}
+        helper="How often the agent runs when started. Only used after you click Start."
       >
         <NumberInput
           id="create-interval"
-          value={state.intervalMs}
-          onChange={(v) => setState((s) => ({ ...s, intervalMs: v }))}
-          min={1000}
-          step={1000}
+          value={state.intervalMin}
+          onChange={(v) => setState((s) => ({ ...s, intervalMin: v }))}
+          min={1}
+          step={1}
           disabled={creating}
         />
       </Field>
