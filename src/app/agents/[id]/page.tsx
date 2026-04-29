@@ -5,6 +5,7 @@ import { use, useEffect, useState } from "react";
 import { AgentEditDialog } from "@/components/AgentEditDialog";
 import { AgentRunControl } from "@/components/AgentRunControl";
 import { Chat } from "@/components/Chat";
+import { TopUpButton } from "@/components/TopUpButton";
 import { UserMenu } from "@/components/UserMenu";
 import { api } from "@/lib/api";
 import type { AgentConfig } from "@/sdk";
@@ -62,6 +63,7 @@ export default function AgentChatPage({ params }: PageProps) {
             <AgentRunControl agent={agent} onChange={setAgent} />
           </>
         )}
+        <TopUpButton />
         <UserMenu />
       </nav>
       <div className="flex min-h-0 flex-1">
