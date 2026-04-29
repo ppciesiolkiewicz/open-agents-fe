@@ -57,12 +57,14 @@ src/
   lib/
     transak.ts                                      builds Transak URL from wallet address
 
+  hooks/
+    useUserWallet.ts                                ← new: WalletContext + useUserWallet() shared hook
+
   components/
     AuthGate/
       components/
         EnsureUserWallet/
           EnsureUserWallet.tsx                      ← provides WalletContext
-          walletContext.ts                          ← new: WalletContext + useUserWallet()
           index.ts
 
       hooks/
@@ -91,7 +93,7 @@ src/
 
 ## Wallet context
 
-`src/components/AuthGate/components/EnsureUserWallet/walletContext.ts`:
+`src/hooks/useUserWallet.ts` — global shared hook, importable via `@/hooks/useUserWallet`:
 
 ```ts
 import { createContext, useContext } from "react";
@@ -101,9 +103,9 @@ export const WalletContext = createContext<MeWallet | null>(null);
 export const useUserWallet = () => useContext(WalletContext);
 ```
 
-`useUserBootstrap` is extended to return `wallet: MeWallet | null` (the first wallet where `isPrimary === true`, or null if none provisioned yet). `EnsureUserWallet` wraps children in `<WalletContext.Provider value={wallet}>`.
+`useUserBootstrap` is extended to return `wallet: MeWallet | null` (the first wallet where `isPrimary === true`, or null if none provisioned yet). `EnsureUserWallet` imports `WalletContext` from `@/hooks/useUserWallet` and wraps children in `<WalletContext.Provider value={wallet}>`.
 
-`useUserWallet` is re-exported from `src/components/AuthGate/index.ts` so that sibling components (`OnboardingGate`, `TopUpButton`) can import it via `@/components/AuthGate` without deep-importing past another folder's `index.ts`.
+`OnboardingGate` and `TopUpButton` import `useUserWallet` from `@/hooks/useUserWallet` directly — no re-export workaround needed.
 
 ## Transak URL builder
 
@@ -217,6 +219,10 @@ Mounted in:
 ## env / config
 
 No new env vars. `NEXT_PUBLIC_TRANSAK_API_KEY` is not used.
+
+## tsconfig alias
+
+Add `"@/hooks/*": ["src/hooks/*"]` to `tsconfig.json` `compilerOptions.paths` alongside the existing aliases.
 
 ## New branch
 
