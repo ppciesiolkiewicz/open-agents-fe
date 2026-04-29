@@ -65,7 +65,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         disabled={disabled || loading}
         data-loading={loading || undefined}
         className={cn(
-          "inline-flex items-center justify-center rounded-md transition-colors",
+          "inline-flex cursor-pointer items-center justify-center rounded-md transition-colors",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400",
           "disabled:cursor-not-allowed disabled:opacity-50",
           VARIANTS[variant],
