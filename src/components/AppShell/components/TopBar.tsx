@@ -10,7 +10,7 @@ export function TopBar() {
     <div className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b border-zinc-200 bg-white/80 px-6 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
       <Link
         href="/agents"
-        className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-zinc-100"
+        className="text-lg font-bold tracking-tight text-zinc-900 hover:underline underline-offset-2 dark:text-zinc-100"
       >
         Cadence
       </Link>
