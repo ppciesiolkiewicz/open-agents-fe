@@ -19,10 +19,11 @@ export function useUserBootstrap(enabled: boolean): UseUserBootstrapResult {
   useEffect(() => {
     if (!enabled) return;
     let cancelled = false;
-    setStatus("loading");
-    setError(null);
 
-    (async () => {
+    void (async () => {
+      if (cancelled) return;
+      setStatus("loading");
+      setError(null);
       try {
         const me = await fetchUserMe();
         if (cancelled) return;
