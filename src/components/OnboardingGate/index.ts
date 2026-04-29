@@ -1,1 +1,5 @@
-export { OnboardingGate, type OnboardingGateProps } from "./OnboardingGate";
+export {
+  OnboardingGate,
+  useOnboarding,
+  type OnboardingGateProps,
+} from "./OnboardingGate";
