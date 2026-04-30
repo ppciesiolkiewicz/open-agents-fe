@@ -81,16 +81,59 @@ export function CheckIcon(props: IconProps) {
   );
 }
 
-export function GearIcon(props: IconProps) {
+export function InfoIcon(props: IconProps) {
   return (
     <svg
       viewBox="0 0 16 16"
-      fill="currentColor"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       aria-hidden="true"
       {...props}
     >
-      <path d="M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 1.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" />
-      <path d="M7.05 1.5a.5.5 0 0 0-.495.43l-.16 1.117a5.51 5.51 0 0 0-1.05.61l-1.05-.42a.5.5 0 0 0-.61.214L2.652 4.74a.5.5 0 0 0 .115.638l.892.71a5.55 5.55 0 0 0 0 1.224l-.892.71a.5.5 0 0 0-.115.638l1.033 1.79a.5.5 0 0 0 .61.213l1.05-.42c.32.245.673.45 1.05.61l.16 1.117a.5.5 0 0 0 .495.43h2.066a.5.5 0 0 0 .495-.43l.16-1.117c.377-.16.73-.365 1.05-.61l1.05.42a.5.5 0 0 0 .61-.214l1.033-1.79a.5.5 0 0 0-.115-.637l-.892-.71a5.55 5.55 0 0 0 0-1.224l.892-.71a.5.5 0 0 0 .115-.638L13.31 3.45a.5.5 0 0 0-.61-.213l-1.05.42a5.51 5.51 0 0 0-1.05-.61l-.16-1.117a.5.5 0 0 0-.495-.43H7.05z" />
+      <circle cx="8" cy="8" r="6" />
+      <path d="M8 7.25v3.5" />
+      <circle cx="8" cy="5.25" r="0.4" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function UnichainIcon(props: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+      {...props}
+    >
+      <circle cx="8" cy="8" r="7" fill="#FF007A" />
+      <path
+        d="M5 4.75v3.75a3 3 0 0 0 6 0V4.75"
+        stroke="white"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        fill="none"
+      />
+    </svg>
+  );
+}
+
+export function GearIcon(props: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.11-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1.04H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.64 8.6a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.06a1.7 1.7 0 0 0 1.04-1.55V2.5a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1.04 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.06a1.7 1.7 0 0 0 1.55 1.04H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1.04Z" />
     </svg>
   );
 }

@@ -1,8 +1,10 @@
 export function formatRelativeSeconds(
-  seconds: number | null | undefined,
+  value: number | null | undefined,
 ): string | null {
-  if (!seconds) return null;
+  if (!value) return null;
+  const seconds = value > 1e12 ? Math.floor(value / 1000) : value;
   const diff = Math.floor(Date.now() / 1000) - seconds;
+  if (diff < 0) return "just now";
   if (diff < 60) return `${diff}s ago`;
   if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;

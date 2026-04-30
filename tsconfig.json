@@ -23,6 +23,7 @@
       "@/ui/*": ["./src/ui/*"],
       "@/components/*": ["./src/components/*"],
       "@/lib/*": ["./src/lib/*"],
+      "@/hooks/*": ["./src/hooks/*"],
       "@/sdk": ["./src/sdk"],
       "@/sdk/*": ["./src/sdk/*"]
     }

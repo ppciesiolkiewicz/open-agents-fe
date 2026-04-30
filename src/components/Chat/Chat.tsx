@@ -12,12 +12,11 @@ import type { EphemeralPayload, Message } from "./types";
 
 export interface ChatProps {
   agentId: string;
-  agentName?: string;
 }
 
 const STREAMING_TICK_PREFIX = "stream:";
 
-export function Chat({ agentId, agentName }: ChatProps) {
+export function Chat({ agentId }: ChatProps) {
   const { messages, loading, error, refresh, upsertStreaming } =
     useMessages(agentId);
   const { enqueue, error: enqueueError } = useEnqueueMessage(agentId);
@@ -84,14 +83,11 @@ export function Chat({ agentId, agentName }: ChatProps) {
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col">
-      <header className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
-        <h2 className="font-semibold">{agentName ?? "Chat"}</h2>
-        {queueStatus && (
-          <span className="flex items-center gap-2 text-xs text-zinc-500">
-            <Spinner size="sm" /> {queueStatus}
-          </span>
-        )}
-      </header>
+      {queueStatus && (
+        <div className="flex items-center gap-2 border-b border-zinc-200 px-4 py-1.5 text-xs text-zinc-500 dark:border-zinc-800">
+          <Spinner size="sm" /> {queueStatus}
+        </div>
+      )}
       {loading ? (
         <div className="flex flex-1 items-center justify-center">
           <Spinner />

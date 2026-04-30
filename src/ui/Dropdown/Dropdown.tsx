@@ -42,15 +42,20 @@ export interface DropdownItemProps {
   onSelect?: () => void;
   disabled?: boolean;
   className?: string;
+  asChild?: boolean;
 }
 
 export const DropdownItem = forwardRef<HTMLDivElement, DropdownItemProps>(
-  function DropdownItem({ children, onSelect, disabled, className }, ref) {
+  function DropdownItem(
+    { children, onSelect, disabled, className, asChild },
+    ref,
+  ) {
     return (
       <RadixMenu.Item
         ref={ref}
         disabled={disabled}
         onSelect={onSelect}
+        asChild={asChild}
         className={cn(
           "flex cursor-pointer select-none items-center rounded px-2 py-1.5 outline-none",
           "data-[highlighted]:bg-zinc-100 data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",

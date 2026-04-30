@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, type ChangeEvent } from "react";
+import { forwardRef, useEffect, useState, type ChangeEvent } from "react";
 import { Input } from "@/ui/Input";
 
 export interface NumberInputProps {
@@ -19,23 +19,33 @@ export interface NumberInputProps {
   className?: string;
 }
 
+function parseValue(raw: string): number | null {
+  if (raw === "") return null;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
   function NumberInput({ value, onChange, ...rest }, ref) {
-    function handleChange(e: ChangeEvent<HTMLInputElement>) {
-      const raw = e.target.value;
-      if (raw === "") {
-        onChange(null);
-        return;
+    const [raw, setRaw] = useState(() => (value === null ? "" : String(value)));
+
+    useEffect(() => {
+      if (parseValue(raw) !== value) {
+        setRaw(value === null ? "" : String(value));
       }
-      const parsed = Number(raw);
-      onChange(Number.isFinite(parsed) ? parsed : null);
+    }, [value, raw]);
+
+    function handleChange(e: ChangeEvent<HTMLInputElement>) {
+      const next = e.target.value;
+      setRaw(next);
+      onChange(parseValue(next));
     }
 
     return (
       <Input
         ref={ref}
         type="number"
-        value={value === null ? "" : String(value)}
+        value={raw}
         onChange={handleChange}
         {...rest}
       />

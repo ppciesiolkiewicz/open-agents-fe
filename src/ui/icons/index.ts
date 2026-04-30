@@ -5,4 +5,6 @@ export {
   WalletIcon,
   CopyIcon,
   CheckIcon,
+  InfoIcon,
+  UnichainIcon,
 } from "./icons";

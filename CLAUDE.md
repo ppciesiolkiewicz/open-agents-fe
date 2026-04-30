@@ -4,6 +4,10 @@
 
 Frontend for the Agent Loop API. Wraps the generated SDK in [src/sdk/](src/sdk/) with chat-oriented UI (agent list, chat view with streaming SSE, activity log).
 
+## Worktree directory
+
+Use `.worktrees/` (project-local, gitignored) for git worktrees.
+
 ## Tech stack
 
 - **Next.js 16** (App Router). See `node_modules/next/dist/docs/` — APIs differ from prior versions.

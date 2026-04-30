@@ -5,7 +5,6 @@ import { use, useEffect, useState } from "react";
 import { AgentEditDialog } from "@/components/AgentEditDialog";
 import { AgentRunControl } from "@/components/AgentRunControl";
 import { Chat } from "@/components/Chat";
-import { UserMenu } from "@/components/UserMenu";
 import { api } from "@/lib/api";
 import type { AgentConfig } from "@/sdk";
 import { IconButton } from "@/ui/IconButton";
@@ -38,7 +37,7 @@ export default function AgentChatPage({ params }: PageProps) {
   }, [id]);
 
   return (
-    <div className="flex h-dvh w-full flex-col">
+    <div className="flex h-[calc(100dvh-3.5rem)] w-full flex-col">
       <nav className="flex items-center gap-3 border-b border-zinc-200 px-4 py-2 text-sm dark:border-zinc-800">
         <Link
           href="/agents"
@@ -56,16 +55,16 @@ export default function AgentChatPage({ params }: PageProps) {
             <IconButton
               aria-label="Edit agent"
               icon={<GearIcon />}
-              size="sm"
+              size="lg"
+              variant="secondary"
               onClick={() => setEditOpen(true)}
             />
-            <AgentRunControl agent={agent} onChange={setAgent} />
+            <AgentRunControl agent={agent} onChange={setAgent} size="lg" />
           </>
         )}
-        <UserMenu />
       </nav>
       <div className="flex min-h-0 flex-1">
-        <Chat agentId={id} agentName={agent?.name} />
+        <Chat agentId={id} />
       </div>
       {agent && (
         <AgentEditDialog
