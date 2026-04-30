@@ -100,6 +100,8 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
     void (async () => {
       try {
         await fetchAll();
+      } catch {
+        if (!cancelled) timer = setTimeout(tick, POLL_INTERVAL_MS);
       } finally {
         if (!cancelled) setLoading(false);
       }

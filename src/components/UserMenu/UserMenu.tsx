@@ -24,8 +24,10 @@ function BalanceRow({
   valueUsd?: number;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4">
-      <span className="text-xs text-zinc-500 dark:text-zinc-400">{label}</span>
+    <div className="flex items-baseline gap-2">
+      <span className="w-10 text-xs text-zinc-500 dark:text-zinc-400">
+        {label}
+      </span>
       <span className="font-mono text-xs text-zinc-900 dark:text-zinc-100">
         {amount} {unit}
         {valueUsd !== undefined && (
@@ -118,27 +120,27 @@ export function UserMenu() {
           </button>
 
           {walletObj.balances && (
-            <DropdownItem asChild className="px-0 py-0">
+            <DropdownItem asChild className="px-0 py-0 flex-col items-stretch">
               <Link
                 href="/balances"
                 aria-label="View balance details"
-                className="flex w-full flex-col gap-0.5 rounded px-2 py-1.5"
+                className="flex w-full flex-col items-start gap-1 rounded px-2 py-1.5"
               >
                 <BalanceRow
                   label="USDC"
-                  amount={truncateAmount(walletObj.balances.usdcOnUnichain.formatted)}
+                  amount={truncateAmount(
+                    walletObj.balances.usdcOnUnichain.formatted,
+                  )}
                   unit="USDC"
                 />
                 <BalanceRow
                   label="0G"
-                  amount={truncateAmount(walletObj.balances.ogOnZerog.formatted)}
+                  amount={truncateAmount(
+                    walletObj.balances.ogOnZerog.formatted,
+                  )}
                   unit="0G"
                   valueUsd={walletObj.balances.ogOnZerog.valueUsd}
                 />
-                <div className="mt-1 flex items-center justify-end gap-1 text-[10px] text-zinc-400 dark:text-zinc-500">
-                  <span>Details</span>
-                  <InfoIcon className="size-3" />
-                </div>
               </Link>
             </DropdownItem>
           )}

@@ -6,4 +6,5 @@ export {
   CopyIcon,
   CheckIcon,
   InfoIcon,
+  UnichainIcon,
 } from "./icons";

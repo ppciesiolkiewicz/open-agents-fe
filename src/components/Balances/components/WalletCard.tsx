@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { OnChainOGBalance } from "@/sdk";
 import { useUserWallet } from "@/hooks/useUserWallet";
 import { Card } from "@/ui/Card";
 import { CheckIcon, CopyIcon } from "@/ui/icons";
@@ -14,10 +15,10 @@ function shortAddress(address: string): string {
 }
 
 export interface WalletCardProps {
-  formatted: string;
+  onChainOG: OnChainOGBalance;
 }
 
-export function WalletCard({ formatted }: WalletCardProps) {
+export function WalletCard({ onChainOG }: WalletCardProps) {
   const wallet = useUserWallet();
   const address = wallet?.walletAddress ?? null;
   const [copied, setCopied] = useState(false);
@@ -39,11 +40,17 @@ export function WalletCard({ formatted }: WalletCardProps) {
       <div className="flex items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
           <span className="text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-            On-chain wallet
+            On-chain wallet (0G)
           </span>
           <span className="font-mono text-lg text-zinc-900 dark:text-zinc-100">
-            {truncateAmount(formatted)}{" "}
+            {truncateAmount(onChainOG.formatted)}{" "}
             <span className="text-sm text-zinc-500 dark:text-zinc-400">0G</span>
+          </span>
+          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+            ${onChainOG.valueUsd.toFixed(2)}{" "}
+            <span className="text-zinc-400 dark:text-zinc-500">
+              · ${onChainOG.priceUsd.toFixed(4)}/0G
+            </span>
           </span>
         </div>
         {address && (

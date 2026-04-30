@@ -8,6 +8,7 @@ import { Spinner } from "@/ui/Spinner";
 import { WalletCard } from "./components/WalletCard";
 import { LedgerCard } from "./components/LedgerCard";
 import { ProvidersTable } from "./components/ProvidersTable";
+import { TokensCard } from "./components/TokensCard";
 
 export function Balances() {
   const [data, setData] = useState<ZeroGBalancesResponse | null>(null);
@@ -67,9 +68,10 @@ export function Balances() {
 
   return (
     <div className="flex flex-col gap-4">
-      <WalletCard formatted={data.onChainWalletFormatted} />
+      <WalletCard onChainOG={data.onChainOG} />
       <LedgerCard ledger={data.ledger} />
       <ProvidersTable providers={data.providers} />
+      <TokensCard tokens={data.tokens} />
     </div>
   );
 }

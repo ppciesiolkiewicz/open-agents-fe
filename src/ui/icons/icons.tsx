@@ -100,6 +100,26 @@ export function InfoIcon(props: IconProps) {
   );
 }
 
+export function UnichainIcon(props: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+      {...props}
+    >
+      <circle cx="8" cy="8" r="7" fill="#FF007A" />
+      <path
+        d="M5 4.75v3.75a3 3 0 0 0 6 0V4.75"
+        stroke="white"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        fill="none"
+      />
+    </svg>
+  );
+}
+
 export function GearIcon(props: IconProps) {
   return (
     <svg
