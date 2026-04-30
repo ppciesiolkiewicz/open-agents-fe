@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useLogout, usePrivy } from "@privy-io/react-auth";
 import { useMe } from "@/components/AuthGate";
 import { TransactionsDialog } from "@/components/Transactions";
 import { Dropdown, DropdownItem } from "@/ui/Dropdown";
 import { IconButton } from "@/ui/IconButton";
-import { CheckIcon, CopyIcon, WalletIcon } from "@/ui/icons";
+import { CheckIcon, CopyIcon, InfoIcon, WalletIcon } from "@/ui/icons";
 import { cn } from "@/lib/cn";
 import { truncateAmount } from "@/lib/formatBalance";
 import { toast } from "@/ui/Toast";
@@ -117,19 +118,29 @@ export function UserMenu() {
           </button>
 
           {walletObj.balances && (
-            <div className="flex flex-col gap-0.5 px-2 py-1.5">
-              <BalanceRow
-                label="USDC"
-                amount={truncateAmount(walletObj.balances.usdcOnUnichain.formatted)}
-                unit="USDC"
-              />
-              <BalanceRow
-                label="0G"
-                amount={truncateAmount(walletObj.balances.ogOnZerog.formatted)}
-                unit="0G"
-                valueUsd={walletObj.balances.ogOnZerog.valueUsd}
-              />
-            </div>
+            <DropdownItem asChild className="px-0 py-0">
+              <Link
+                href="/balances"
+                aria-label="View balance details"
+                className="flex w-full flex-col gap-0.5 rounded px-2 py-1.5"
+              >
+                <BalanceRow
+                  label="USDC"
+                  amount={truncateAmount(walletObj.balances.usdcOnUnichain.formatted)}
+                  unit="USDC"
+                />
+                <BalanceRow
+                  label="0G"
+                  amount={truncateAmount(walletObj.balances.ogOnZerog.formatted)}
+                  unit="0G"
+                  valueUsd={walletObj.balances.ogOnZerog.valueUsd}
+                />
+                <div className="mt-1 flex items-center justify-end gap-1 text-[10px] text-zinc-400 dark:text-zinc-500">
+                  <span>Details</span>
+                  <InfoIcon className="size-3" />
+                </div>
+              </Link>
+            </DropdownItem>
           )}
         </>
       ) : (

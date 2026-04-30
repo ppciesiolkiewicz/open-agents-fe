@@ -81,6 +81,25 @@ export function CheckIcon(props: IconProps) {
   );
 }
 
+export function InfoIcon(props: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <circle cx="8" cy="8" r="6" />
+      <path d="M8 7.25v3.5" />
+      <circle cx="8" cy="5.25" r="0.4" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function GearIcon(props: IconProps) {
   return (
     <svg
