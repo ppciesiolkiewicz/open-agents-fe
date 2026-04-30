@@ -5,4 +5,5 @@ export {
   WalletIcon,
   CopyIcon,
   CheckIcon,
+  InfoIcon,
 } from "./icons";
