@@ -1,6 +1,6 @@
 "use client";
 
-import type { TokenBalanceWithPrice } from "@/sdk";
+import type { TokenBalanceWithPrice, WalletBalancesResponse } from "@/sdk";
 import { Card } from "@/ui/Card";
 import { UnichainIcon } from "@/ui/icons";
 import { truncateAmount } from "@/lib/formatBalance";
@@ -27,7 +27,7 @@ function TokenRow({ token }: { token: TokenBalanceWithPrice }) {
   return (
     <li className="flex items-center justify-between gap-3 py-2">
       <div className="flex min-w-0 items-center gap-2">
-        <span className="font-medium text-sm text-zinc-900 dark:text-zinc-100">
+        <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
           {token.symbol}
         </span>
         {chainBadge(token.chainId)}
@@ -53,23 +53,30 @@ function TokenRow({ token }: { token: TokenBalanceWithPrice }) {
 }
 
 export interface TokensCardProps {
-  tokens: TokenBalanceWithPrice[];
+  walletBalances: WalletBalancesResponse;
 }
 
-export function TokensCard({ tokens }: TokensCardProps) {
+export function TokensCard({ walletBalances }: TokensCardProps) {
+  const allTokens = Object.values(walletBalances.chains).flatMap((c) => c.tokens);
+
   return (
     <Card>
       <div className="flex flex-col gap-1">
-        <span className="text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-          Tokens
-        </span>
-        {tokens.length === 0 ? (
+        <div className="flex items-baseline justify-between">
+          <span className="text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+            Tokens
+          </span>
+          <span className="font-mono text-xs text-zinc-500 dark:text-zinc-400">
+            ${walletBalances.totalValueUsd.toFixed(2)} total
+          </span>
+        </div>
+        {allTokens.length === 0 ? (
           <p className="py-2 text-sm text-zinc-500 dark:text-zinc-400">
             No tokens.
           </p>
         ) : (
           <ul className="flex flex-col divide-y divide-zinc-200 dark:divide-zinc-800">
-            {tokens.map((t) => (
+            {allTokens.map((t) => (
               <TokenRow key={`${t.chainId}-${t.address}`} token={t} />
             ))}
           </ul>

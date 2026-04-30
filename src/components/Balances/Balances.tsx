@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
-import type { ZeroGBalancesResponse } from "@/sdk";
+import type { WalletBalancesResponse, ZeroGBalancesResponse } from "@/sdk";
 import { Button } from "@/ui/Button";
 import { Spinner } from "@/ui/Spinner";
 import { WalletCard } from "./components/WalletCard";
@@ -11,7 +11,8 @@ import { ProvidersTable } from "./components/ProvidersTable";
 import { TokensCard } from "./components/TokensCard";
 
 export function Balances() {
-  const [data, setData] = useState<ZeroGBalancesResponse | null>(null);
+  const [zerogData, setZerogData] = useState<ZeroGBalancesResponse | null>(null);
+  const [walletData, setWalletData] = useState<WalletBalancesResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
@@ -21,9 +22,13 @@ export function Balances() {
 
     void (async () => {
       try {
-        const res = await api.usersMeZerogBalancesGet();
+        const [zerog, wallet] = await Promise.all([
+          api.usersMeZerogBalancesGet(),
+          api.usersMeWalletBalancesGet(),
+        ]);
         if (cancelled) return;
-        setData(res);
+        setZerogData(zerog);
+        setWalletData(wallet);
         setError(null);
       } catch (e) {
         if (!cancelled) {
@@ -45,7 +50,7 @@ export function Balances() {
     setReloadKey((k) => k + 1);
   }
 
-  if (loading && !data) {
+  if (loading && !zerogData) {
     return (
       <div className="flex items-center justify-center py-12">
         <Spinner />
@@ -53,7 +58,7 @@ export function Balances() {
     );
   }
 
-  if (error && !data) {
+  if (error && !zerogData) {
     return (
       <div className="flex flex-col items-center gap-3 py-12">
         <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
@@ -64,14 +69,14 @@ export function Balances() {
     );
   }
 
-  if (!data) return null;
+  if (!zerogData) return null;
 
   return (
     <div className="flex flex-col gap-4">
-      <WalletCard onChainOG={data.onChainOG} />
-      <LedgerCard ledger={data.ledger} />
-      <ProvidersTable providers={data.providers} />
-      <TokensCard tokens={data.tokens} />
+      <WalletCard onChainOG={zerogData.onChainOG} />
+      <LedgerCard ledger={zerogData.ledger} />
+      <ProvidersTable providers={zerogData.providers} />
+      {walletData && <TokensCard walletBalances={walletData} />}
     </div>
   );
 }
