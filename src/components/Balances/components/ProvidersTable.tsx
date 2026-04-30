@@ -30,6 +30,22 @@ function ProviderRow({ provider }: { provider: ProviderBalance }) {
     <li className="flex flex-col gap-1.5 py-3">
       <div className="flex items-center justify-between gap-3">
         <span className="text-[10px] uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+          Model
+        </span>
+        <span className="font-mono text-xs text-zinc-900 dark:text-zinc-100">
+          {provider.model}
+        </span>
+      </div>
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-[10px] uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+          Service
+        </span>
+        <span className="text-xs text-zinc-700 dark:text-zinc-300">
+          {provider.serviceType}
+        </span>
+      </div>
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-[10px] uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
           Address
         </span>
         <button
