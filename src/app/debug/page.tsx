@@ -22,17 +22,6 @@ function Section({
   );
 }
 
-function Field({ label, value }: { label: string; value: React.ReactNode }) {
-  return (
-    <div className="flex items-start justify-between gap-4 py-1">
-      <span className="text-xs text-zinc-500 dark:text-zinc-400">{label}</span>
-      <span className="break-all text-right font-mono text-xs text-zinc-900 dark:text-zinc-100">
-        {value ?? "—"}
-      </span>
-    </div>
-  );
-}
-
 function Json({ value }: { value: unknown }) {
   return (
     <pre className="overflow-x-auto whitespace-pre-wrap break-all font-mono text-xs text-zinc-800 dark:text-zinc-200">
@@ -56,53 +45,82 @@ export default function DebugPage() {
       </header>
 
       <Section title="Status">
-        <Field label="Privy ready" value={String(ready)} />
-        <Field label="Authenticated" value={String(authenticated)} />
-        <Field label="Wallets ready" value={String(walletsReady)} />
+        <Json
+          value={{
+            ready,
+            authenticated,
+            walletsReady,
+          }}
+        />
       </Section>
 
-      <Section title="Privy user">
-        <Field label="DID" value={user?.id ?? null} />
-        <Field label="Created at" value={user?.createdAt?.toString() ?? null} />
-        <Field label="Email" value={user?.email?.address ?? null} />
-        <Field label="Phone" value={user?.phone?.number ?? null} />
-        <Field label="Google" value={user?.google?.email ?? null} />
-        <Field label="Wallet (primary)" value={user?.wallet?.address ?? null} />
+      <Section title="usePrivy().user">
+        <Json value={user} />
       </Section>
 
-      <Section title="Privy linked accounts">
-        <Json value={user?.linkedAccounts ?? []} />
+      <Section title="usePrivy().user.linkedAccounts">
+        <Json value={user?.linkedAccounts} />
       </Section>
 
-      <Section title="Privy wallets (useWallets)">
-        {wallets.length === 0 ? (
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">
-            No wallets
-          </span>
+      <Section title="useWallets().wallets">
+        <Json value={wallets} />
+      </Section>
+
+      <Section title="Backend server wallets">
+        {me ? (
+          <ServerWalletList me={me} />
         ) : (
-          <Json
-            value={wallets.map((w) => ({
-              address: w.address,
-              chainId: w.chainId,
-              walletClientType: w.walletClientType,
-              connectorType: w.connectorType,
-              imported: w.imported,
-            }))}
-          />
-        )}
-      </Section>
-
-      <Section title="Backend /users/me">
-        {me ? <Json value={me} /> : (
           <span className="text-xs text-zinc-500 dark:text-zinc-400">
             Not loaded
           </span>
         )}
       </Section>
 
-      <Section title="Privy user (raw)">
-        <Json value={user} />
+      <Section title="Backend /users/me (raw)">
+        <Json value={me} />
       </Section>
+    </div>
+  );
+}
+
+function formatTs(n: number): string {
+  const ms = n < 1e12 ? n * 1000 : n;
+  return new Date(ms).toISOString();
+}
+
+function ServerWalletList({ me }: { me: NonNullable<ReturnType<typeof useMe>> }) {
+  if (me.wallets.length === 0) {
+    return (
+      <span className="text-xs text-zinc-500 dark:text-zinc-400">
+        No server wallets
+      </span>
+    );
+  }
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="text-xs text-zinc-500 dark:text-zinc-400">
+        count: {me.wallets.length}
+      </div>
+      <div className="flex flex-col divide-y divide-zinc-200 dark:divide-zinc-800">
+        {me.wallets.map((w) => (
+          <div key={w.id} className="flex flex-col gap-1 py-2 first:pt-0 last:pb-0">
+            <div className="flex items-center gap-2">
+              <span className="break-all font-mono text-xs text-zinc-900 dark:text-zinc-100">
+                {w.walletAddress}
+              </span>
+              {w.isPrimary && (
+                <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium uppercase text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                  primary
+                </span>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+              <span>id: {w.id}</span>
+              <span>created: {formatTs(w.createdAt)}</span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
