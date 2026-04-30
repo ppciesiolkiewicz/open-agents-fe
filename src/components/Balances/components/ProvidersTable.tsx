@@ -79,14 +79,6 @@ function ProviderRow({ provider }: { provider: ProviderBalance }) {
           <span className="text-xs text-zinc-500 dark:text-zinc-400">0G</span>
         </span>
       </div>
-      <div className="flex items-baseline justify-between gap-3">
-        <span className="text-[10px] uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-          Raw
-        </span>
-        <span className="truncate font-mono text-[11px] text-zinc-500 dark:text-zinc-500">
-          {provider.balanceRaw}
-        </span>
-      </div>
     </li>
   );
 }
