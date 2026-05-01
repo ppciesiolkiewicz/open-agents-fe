@@ -1,7 +1,7 @@
 "use client";
 
 import { Spinner } from "@/ui/Spinner";
-import { AgentCard } from "./components/AgentCard";
+import { AgentGraph } from "./components/AgentGraph";
 import { useAgents } from "./hooks/useAgents";
 
 export function AgentGrid() {
@@ -31,13 +31,5 @@ export function AgentGrid() {
     );
   }
 
-  return (
-    <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {agents.map((a) => (
-        <li key={a.id} className="flex">
-          <AgentCard agent={a} />
-        </li>
-      ))}
-    </ul>
-  );
+  return <AgentGraph agents={agents} />;
 }
