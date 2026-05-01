@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Background,
   BackgroundVariant,
@@ -19,9 +20,9 @@ import {
   applyNodeChanges,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { emitAgentsRefresh } from "@/lib/agentsRefresh";
 import { AgentEditDialog } from "@/components/AgentEditDialog";
 import { api } from "@/lib/api";
+import { agentsQueryKey } from "@/lib/agentsQuery";
 import type { AgentConfig } from "@/sdk";
 import { Badge } from "@/ui/Badge";
 import { Button } from "@/ui/Button";
@@ -108,6 +109,7 @@ function buildEdges(agents: AgentConfig[]): Edge[] {
 }
 
 function AgentNode({ data }: { data: NodeData }) {
+  const queryClient = useQueryClient();
   const [editedAgent, setEditedAgent] = useState<AgentConfig | null>(null);
   const agent = editedAgent ?? data.agent;
   const [editOpen, setEditOpen] = useState(false);
@@ -124,11 +126,11 @@ function AgentNode({ data }: { data: NodeData }) {
     try {
       const updated = await api.agentsIdStartPost({ id: agent.id });
       setRunningOverride(Boolean(updated.running));
-      emitAgentsRefresh();
+      void queryClient.invalidateQueries({ queryKey: agentsQueryKey });
     } finally {
       setStarting(false);
     }
-  }, [agent.id, running, starting]);
+  }, [agent.id, queryClient, running, starting]);
 
   const openConfig = useCallback(async () => {
     if (openingConfig) return;
@@ -156,13 +158,13 @@ function AgentNode({ data }: { data: NodeData }) {
     setDeleting(true);
     try {
       await api.agentsIdDelete({ id: agent.id });
-      emitAgentsRefresh();
+      void queryClient.invalidateQueries({ queryKey: agentsQueryKey });
     } catch (e) {
       setDeleteError(e instanceof Error ? e.message : "Failed to delete agent");
     } finally {
       setDeleting(false);
     }
-  }, [agent.id, agent.name, deleting]);
+  }, [agent.id, agent.name, deleting, queryClient]);
 
   const fullPrompt = agent.prompt.trim() || "No prompt";
   const promptPreview = truncateText(fullPrompt, 50);
@@ -342,6 +344,7 @@ function RemovableConnectionEdge({
 const edgeTypes = { removableConnection: RemovableConnectionEdge };
 
 function AgentGraphInner({ agents }: AgentGraphProps) {
+  const queryClient = useQueryClient();
   const storedPositions = useMemo(() => readStoredPositions(), []);
   const initialNodes = useMemo(
     () =>
@@ -399,7 +402,7 @@ function AgentGraphInner({ agents }: AgentGraphProps) {
             style: { strokeWidth: 2, stroke: "#64748b" },
           },
         ]);
-        emitAgentsRefresh();
+        void queryClient.invalidateQueries({ queryKey: agentsQueryKey });
       } catch (e) {
         setMutationError(
           e instanceof Error ? e.message : "Failed to create connection",
@@ -408,7 +411,7 @@ function AgentGraphInner({ agents }: AgentGraphProps) {
         setMutating(false);
       }
     },
-    [mutating],
+    [mutating, queryClient],
   );
 
   const onEdgesDelete = useCallback(
@@ -423,7 +426,7 @@ function AgentGraphInner({ agents }: AgentGraphProps) {
             peerAgentId: edge.target,
           });
         }
-        emitAgentsRefresh();
+        void queryClient.invalidateQueries({ queryKey: agentsQueryKey });
       } catch (e) {
         setMutationError(
           e instanceof Error ? e.message : "Failed to remove connection",
@@ -432,7 +435,7 @@ function AgentGraphInner({ agents }: AgentGraphProps) {
         setMutating(false);
       }
     },
-    [mutating],
+    [mutating, queryClient],
   );
 
   const removeConnection = useCallback(
@@ -448,7 +451,7 @@ function AgentGraphInner({ agents }: AgentGraphProps) {
           peerAgentId: target,
         });
         setEdges((current) => current.filter((edge) => edge.id !== key));
-        emitAgentsRefresh();
+        void queryClient.invalidateQueries({ queryKey: agentsQueryKey });
       } catch (e) {
         setMutationError(
           e instanceof Error ? e.message : "Failed to remove connection",
@@ -458,7 +461,7 @@ function AgentGraphInner({ agents }: AgentGraphProps) {
         setMutating(false);
       }
     },
-    [mutating],
+    [mutating, queryClient],
   );
 
   const onEdgeClick = useCallback<EdgeMouseHandler<Edge>>(

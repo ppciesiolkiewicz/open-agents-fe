@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { emitAgentsRefresh } from "@/lib/agentsRefresh";
+import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
+import { agentsQueryKey } from "@/lib/agentsQuery";
 import type { AgentConfig, CreateAgentBody } from "@/sdk";
 
 interface UseCreateAgentResult {
@@ -12,6 +13,7 @@ interface UseCreateAgentResult {
 }
 
 export function useCreateAgent(): UseCreateAgentResult {
+  const queryClient = useQueryClient();
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +23,7 @@ export function useCreateAgent(): UseCreateAgentResult {
       setError(null);
       try {
         const created = await api.agentsPost({ createAgentBody: body });
-        emitAgentsRefresh();
+        void queryClient.invalidateQueries({ queryKey: agentsQueryKey });
         return created;
       } catch (e) {
         setError(e instanceof Error ? e.message : "Failed to create agent");
@@ -30,7 +32,7 @@ export function useCreateAgent(): UseCreateAgentResult {
         setCreating(false);
       }
     },
-    [],
+    [queryClient],
   );
 
   return { create, creating, error };
