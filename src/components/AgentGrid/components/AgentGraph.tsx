@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useLayoutEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Background,
@@ -13,11 +13,11 @@ import {
   getStraightPath,
   Handle,
   type Node,
-  type NodeChange,
   Position,
   ReactFlow,
   ReactFlowProvider,
-  applyNodeChanges,
+  useEdgesState,
+  useNodesState,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { AgentEditDialog } from "@/components/AgentEditDialog";
@@ -38,11 +38,11 @@ interface XYPosition {
   y: number;
 }
 
-interface NodeData {
+interface NodeData extends Record<string, unknown> {
   agent: AgentConfig;
 }
 
-interface RemovableEdgeData {
+interface RemovableEdgeData extends Record<string, unknown> {
   onRemove?: (source: string, target: string) => void;
   removing?: boolean;
 }
@@ -87,11 +87,13 @@ function getAutoPosition(index: number): XYPosition {
 }
 
 function buildEdges(agents: AgentConfig[]): Edge[] {
+  const agentIds = new Set(agents.map((a) => a.id));
   const seen = new Set<string>();
   const edges: Edge[] = [];
 
   for (const agent of agents) {
     for (const peerId of agent.connectedAgentIds) {
+      if (peerId === agent.id || !agentIds.has(peerId)) continue;
       const key = edgeKey(agent.id, peerId);
       if (seen.has(key)) continue;
       seen.add(key);
@@ -345,39 +347,44 @@ const edgeTypes = { removableConnection: RemovableConnectionEdge };
 
 function AgentGraphInner({ agents }: AgentGraphProps) {
   const queryClient = useQueryClient();
-  const storedPositions = useMemo(() => readStoredPositions(), []);
-  const initialNodes = useMemo(
-    () =>
-      agents.map((agent, index) => ({
-        id: agent.id,
-        type: "agentNode",
-        position: storedPositions[agent.id] ?? getAutoPosition(index),
-        data: { agent },
-        draggable: true,
-      })) satisfies Node<NodeData>[],
-    [agents, storedPositions],
-  );
-  const initialEdges = useMemo(() => buildEdges(agents), [agents]);
-  const [nodes, setNodes] = useState<Node<NodeData>[]>(initialNodes);
-  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node<NodeData>>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [mutating, setMutating] = useState(false);
   const [removingEdgeId, setRemovingEdgeId] = useState<string | null>(null);
   const [mutationError, setMutationError] = useState<string | null>(null);
 
-  const onNodesChange = useCallback(
-    (changes: NodeChange<Node<NodeData>>[]) => {
-      setNodes((current) => {
-        const next = applyNodeChanges(changes, current);
-        const nextPositions = { ...readStoredPositions() };
-        for (const node of next) {
-          nextPositions[node.id] = node.position;
-        }
-        writeStoredPositions(nextPositions);
-        return next;
+  useLayoutEffect(() => {
+    const stored = readStoredPositions();
+    setNodes((prev) => {
+      const prevById = new Map(prev.map((n) => [n.id, n]));
+      return agents.map((agent, index) => {
+        const existing = prevById.get(agent.id);
+        const position =
+          existing?.position ?? stored[agent.id] ?? getAutoPosition(index);
+        return {
+          ...existing,
+          id: agent.id,
+          type: "agentNode",
+          position,
+          data: { agent },
+          draggable: true,
+        };
       });
-    },
-    [setNodes],
-  );
+    });
+  }, [agents, setNodes]);
+
+  useLayoutEffect(() => {
+    setEdges(buildEdges(agents));
+  }, [agents, setEdges]);
+
+  useLayoutEffect(() => {
+    if (nodes.length === 0) return;
+    const next: Record<string, XYPosition> = {};
+    for (const node of nodes) {
+      next[node.id] = node.position;
+    }
+    writeStoredPositions(next);
+  }, [nodes]);
 
   const onConnect = useCallback(
     async (connection: { source: string | null; target: string | null }) => {
@@ -392,16 +399,6 @@ function AgentGraphInner({ agents }: AgentGraphProps) {
           id: source,
           manageAgentConnectionBody: { peerAgentId: target },
         });
-        setEdges((current) => [
-          ...current,
-          {
-            id: edgeKey(source, target),
-            source,
-            target,
-            type: "removableConnection",
-            style: { strokeWidth: 2, stroke: "#64748b" },
-          },
-        ]);
         void queryClient.invalidateQueries({ queryKey: agentsQueryKey });
       } catch (e) {
         setMutationError(
@@ -450,7 +447,6 @@ function AgentGraphInner({ agents }: AgentGraphProps) {
           id: source,
           peerAgentId: target,
         });
-        setEdges((current) => current.filter((edge) => edge.id !== key));
         void queryClient.invalidateQueries({ queryKey: agentsQueryKey });
       } catch (e) {
         setMutationError(
@@ -499,6 +495,7 @@ function AgentGraphInner({ agents }: AgentGraphProps) {
           nodes={nodes}
           edges={edgesWithHandlers}
           onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
           onEdgeClick={onEdgeClick}
           onConnect={onConnect}
           onEdgesDelete={onEdgesDelete}
