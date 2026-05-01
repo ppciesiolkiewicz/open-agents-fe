@@ -2,11 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { subscribeAgentsRefresh } from "@/lib/agentsRefresh";
 import type { AgentConfig } from "@/sdk";
 
 interface UseAgentsResult {
   agents: AgentConfig[];
   loading: boolean;
+  refreshing: boolean;
   error: string | null;
   refresh: () => void;
 }
@@ -14,6 +16,7 @@ interface UseAgentsResult {
 export function useAgents(): UseAgentsResult {
   const [agents, setAgents] = useState<AgentConfig[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -39,7 +42,7 @@ export function useAgents(): UseAgentsResult {
   }, []);
 
   const refresh = useCallback(() => {
-    setLoading(true);
+    setRefreshing(true);
     api
       .agentsGet()
       .then((list) => {
@@ -49,8 +52,10 @@ export function useAgents(): UseAgentsResult {
       .catch((e) =>
         setError(e instanceof Error ? e.message : "Failed to load agents"),
       )
-      .finally(() => setLoading(false));
+      .finally(() => setRefreshing(false));
   }, []);
 
-  return { agents, loading, error, refresh };
+  useEffect(() => subscribeAgentsRefresh(refresh), [refresh]);
+
+  return { agents, loading, refreshing, error, refresh };
 }

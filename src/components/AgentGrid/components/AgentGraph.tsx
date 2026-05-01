@@ -7,7 +7,6 @@ import {
   BackgroundVariant,
   BaseEdge,
   type Edge,
-  type EdgeChange,
   EdgeLabelRenderer,
   type EdgeMouseHandler,
   getStraightPath,
@@ -17,11 +16,10 @@ import {
   Position,
   ReactFlow,
   ReactFlowProvider,
-  addEdge,
-  applyEdgeChanges,
   applyNodeChanges,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { emitAgentsRefresh } from "@/lib/agentsRefresh";
 import { AgentEditDialog } from "@/components/AgentEditDialog";
 import { api } from "@/lib/api";
 import type { AgentConfig } from "@/sdk";
@@ -124,6 +122,7 @@ function AgentNode({ data }: { data: NodeData }) {
     try {
       const updated = await api.agentsIdStartPost({ id: agent.id });
       setRunningOverride(Boolean(updated.running));
+      emitAgentsRefresh();
     } finally {
       setStarting(false);
     }
@@ -341,11 +340,6 @@ function AgentGraphInner({ agents }: AgentGraphProps) {
     [setNodes],
   );
 
-  const onEdgesChange = useCallback(
-    (changes: EdgeChange<Edge>[]) => setEdges((current) => applyEdgeChanges(changes, current)),
-    [setEdges],
-  );
-
   const onConnect = useCallback(
     async (connection: { source: string | null; target: string | null }) => {
       const source = connection.source;
@@ -359,18 +353,17 @@ function AgentGraphInner({ agents }: AgentGraphProps) {
           id: source,
           manageAgentConnectionBody: { peerAgentId: target },
         });
-        setEdges((current) =>
-          addEdge(
-            {
-              id: edgeKey(source, target),
-              source,
-              target,
-              type: "removableConnection",
-              style: { strokeWidth: 2, stroke: "#64748b" },
-            },
-            current,
-          ),
-        );
+        setEdges((current) => [
+          ...current,
+          {
+            id: edgeKey(source, target),
+            source,
+            target,
+            type: "removableConnection",
+            style: { strokeWidth: 2, stroke: "#64748b" },
+          },
+        ]);
+        emitAgentsRefresh();
       } catch (e) {
         setMutationError(
           e instanceof Error ? e.message : "Failed to create connection",
@@ -394,6 +387,7 @@ function AgentGraphInner({ agents }: AgentGraphProps) {
             peerAgentId: edge.target,
           });
         }
+        emitAgentsRefresh();
       } catch (e) {
         setMutationError(
           e instanceof Error ? e.message : "Failed to remove connection",
@@ -417,9 +411,8 @@ function AgentGraphInner({ agents }: AgentGraphProps) {
           id: source,
           peerAgentId: target,
         });
-        setEdges((current) =>
-          current.filter((edge) => edge.id !== key),
-        );
+        setEdges((current) => current.filter((edge) => edge.id !== key));
+        emitAgentsRefresh();
       } catch (e) {
         setMutationError(
           e instanceof Error ? e.message : "Failed to remove connection",
@@ -467,7 +460,6 @@ function AgentGraphInner({ agents }: AgentGraphProps) {
           nodes={nodes}
           edges={edgesWithHandlers}
           onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
           onEdgeClick={onEdgeClick}
           onConnect={onConnect}
           onEdgesDelete={onEdgesDelete}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { emitAgentsRefresh } from "@/lib/agentsRefresh";
 import { api } from "@/lib/api";
 import type { AgentConfig, CreateAgentBody } from "@/sdk";
 
@@ -19,7 +20,9 @@ export function useCreateAgent(): UseCreateAgentResult {
       setCreating(true);
       setError(null);
       try {
-        return await api.agentsPost({ createAgentBody: body });
+        const created = await api.agentsPost({ createAgentBody: body });
+        emitAgentsRefresh();
+        return created;
       } catch (e) {
         setError(e instanceof Error ? e.message : "Failed to create agent");
         return null;

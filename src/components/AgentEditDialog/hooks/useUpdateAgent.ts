@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { emitAgentsRefresh } from "@/lib/agentsRefresh";
 import { api } from "@/lib/api";
 import type { AgentConfig, UpdateAgentBody } from "@/sdk";
 
@@ -19,7 +20,9 @@ export function useUpdateAgent(agentId: string): UseUpdateAgentResult {
       setSaving(true);
       setError(null);
       try {
-        return await api.agentsIdPatch({ id: agentId, updateAgentBody: body });
+        const updated = await api.agentsIdPatch({ id: agentId, updateAgentBody: body });
+        emitAgentsRefresh();
+        return updated;
       } catch (e) {
         setError(e instanceof Error ? e.message : "Failed to save agent");
         return null;
