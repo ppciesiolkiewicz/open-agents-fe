@@ -2,6 +2,7 @@ export {
   PlayIcon,
   StopIcon,
   GearIcon,
+  BinIcon,
   WalletIcon,
   PersonIcon,
   CopyIcon,

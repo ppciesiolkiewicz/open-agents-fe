@@ -115,6 +115,8 @@ function AgentNode({ data }: { data: NodeData }) {
   const running = runningOverride ?? Boolean(agent.running);
   const [starting, setStarting] = useState(false);
   const [openingConfig, setOpeningConfig] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const startAgent = useCallback(async () => {
     if (running || starting) return;
@@ -143,6 +145,25 @@ function AgentNode({ data }: { data: NodeData }) {
     }
   }, [agent.id, openingConfig]);
 
+  const deleteAgent = useCallback(async () => {
+    if (deleting) return;
+    const confirmed = window.confirm(
+      `Delete "${agent.name}"? This action cannot be undone.`,
+    );
+    if (!confirmed) return;
+
+    setDeleteError(null);
+    setDeleting(true);
+    try {
+      await api.agentsIdDelete({ id: agent.id });
+      emitAgentsRefresh();
+    } catch (e) {
+      setDeleteError(e instanceof Error ? e.message : "Failed to delete agent");
+    } finally {
+      setDeleting(false);
+    }
+  }, [agent.id, agent.name, deleting]);
+
   const fullPrompt = agent.prompt.trim() || "No prompt";
   const promptPreview = truncateText(fullPrompt, 50);
   const dryRunLabel = agent.dryRun ? "Enabled" : "Disabled";
@@ -163,7 +184,19 @@ function AgentNode({ data }: { data: NodeData }) {
         <div className="truncate font-semibold text-zinc-900 dark:text-zinc-100">
           {agent.name}
         </div>
-        {agent.dryRun && <Badge tone="warning">dry run</Badge>}
+        <div className="flex items-center gap-1">
+          {agent.dryRun && <Badge tone="warning">dry run</Badge>}
+          <button
+            type="button"
+            className="nodrag nopan inline-flex size-6 cursor-pointer items-center justify-center rounded-md border border-zinc-300 bg-white text-sm text-zinc-500 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-red-800 dark:hover:bg-red-950/50 dark:hover:text-red-300"
+            aria-label={`Delete ${agent.name}`}
+            title={`Delete ${agent.name}`}
+            onClick={deleteAgent}
+            disabled={deleting}
+          >
+            {deleting ? <Spinner size="sm" aria-label="Deleting agent" /> : "×"}
+          </button>
+        </div>
       </div>
       <div className="mb-3 space-y-1 text-xs text-zinc-500 dark:text-zinc-400">
         <p className="truncate">
@@ -236,6 +269,9 @@ function AgentNode({ data }: { data: NodeData }) {
           </Link>
         </div>
       </div>
+      {deleteError && (
+        <p className="mt-2 text-xs text-red-600 dark:text-red-400">{deleteError}</p>
+      )}
       <AgentEditDialog
         agent={agent}
         open={editOpen}

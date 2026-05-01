@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 import { AgentEditDialog } from "@/components/AgentEditDialog";
 import { AgentRunControl } from "@/components/AgentRunControl";
@@ -10,7 +11,7 @@ import { api } from "@/lib/api";
 import type { AgentConfig } from "@/sdk";
 import { Badge } from "@/ui/Badge";
 import { IconButton } from "@/ui/IconButton";
-import { GearIcon } from "@/ui/icons";
+import { BinIcon, GearIcon } from "@/ui/icons";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -18,9 +19,11 @@ interface PageProps {
 
 export default function AgentChatPage({ params }: PageProps) {
   const { id } = use(params);
+  const router = useRouter();
   const [agent, setAgent] = useState<AgentConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -37,6 +40,24 @@ export default function AgentChatPage({ params }: PageProps) {
       cancelled = true;
     };
   }, [id]);
+
+  const deleteAgent = async () => {
+    if (!agent || deleting) return;
+    const confirmed = window.confirm(
+      `Delete "${agent.name}"? This action cannot be undone.`,
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+    setError(null);
+    try {
+      await api.agentsIdDelete({ id: agent.id });
+      router.push("/agents");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to delete agent");
+      setDeleting(false);
+    }
+  };
 
   return (
     <div className="flex h-[calc(100dvh-3.5rem)] w-full flex-col">
@@ -58,6 +79,14 @@ export default function AgentChatPage({ params }: PageProps) {
         {agent && (
           <>
             <AgentWalletPopover />
+            <IconButton
+              aria-label="Delete agent"
+              icon={<BinIcon />}
+              size="lg"
+              variant="danger"
+              onClick={deleteAgent}
+              loading={deleting}
+            />
             <IconButton
               aria-label="Edit agent"
               icon={<GearIcon />}

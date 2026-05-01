@@ -155,3 +155,24 @@ export function GearIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function BinIcon(props: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="M4 7h16" />
+      <path d="M9.5 3h5a1 1 0 0 1 1 1v2h-7V4a1 1 0 0 1 1-1Z" />
+      <path d="M7.5 7l.7 12a2 2 0 0 0 2 1.9h3.6a2 2 0 0 0 2-1.9l.7-12" />
+      <path d="M10 11v6" />
+      <path d="M14 11v6" />
+    </svg>
+  );
+}
