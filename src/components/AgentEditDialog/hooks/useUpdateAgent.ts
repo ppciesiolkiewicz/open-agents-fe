@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { agentsQueryKey } from "@/lib/agentsQuery";
+import { invalidateAgentsAndChannelsQueries } from "@/lib/agentsQuery";
 import type { AgentConfig, UpdateAgentBody } from "@/sdk";
 
 interface UseUpdateAgentResult {
@@ -23,7 +23,7 @@ export function useUpdateAgent(agentId: string): UseUpdateAgentResult {
       setError(null);
       try {
         const updated = await api.agentsIdPatch({ id: agentId, updateAgentBody: body });
-        void queryClient.invalidateQueries({ queryKey: agentsQueryKey });
+        invalidateAgentsAndChannelsQueries(queryClient);
         return updated;
       } catch (e) {
         setError(e instanceof Error ? e.message : "Failed to save agent");

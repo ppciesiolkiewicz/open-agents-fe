@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { agentsQueryKey } from "@/lib/agentsQuery";
+import { invalidateAgentsAndChannelsQueries } from "@/lib/agentsQuery";
 import { Button } from "@/ui/Button";
 import { Dialog, DialogFooter } from "@/ui/Dialog";
 import { Field } from "@/ui/Field";
@@ -35,7 +35,7 @@ export function ChannelCreateDialog({
       await api.axlChannelsPost({
         createAxlChannelBody: { name: trimmedName },
       });
-      void queryClient.invalidateQueries({ queryKey: agentsQueryKey });
+      invalidateAgentsAndChannelsQueries(queryClient);
       setName("");
       onOpenChange(false);
     } catch (e) {

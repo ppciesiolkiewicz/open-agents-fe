@@ -5,7 +5,7 @@ import { AgentGraph } from "./components/AgentGraph";
 import { useAgents } from "./hooks/useAgents";
 
 export function AgentGrid() {
-  const { agents, loading, error } = useAgents();
+  const { agents, channels, loading, error } = useAgents();
 
   if (loading) {
     return (
@@ -23,13 +23,13 @@ export function AgentGrid() {
     );
   }
 
-  if (agents.length === 0) {
+  if (agents.length === 0 && channels.length === 0) {
     return (
       <div className="rounded-md border border-dashed border-zinc-300 p-8 text-center text-sm text-zinc-500 dark:border-zinc-700">
-        No agents yet. Create one via the API.
+        No agents or channels yet.
       </div>
     );
   }
 
-  return <AgentGraph agents={agents} />;
+  return <AgentGraph agents={agents} channels={channels} />;
 }
