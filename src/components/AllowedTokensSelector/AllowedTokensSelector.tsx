@@ -88,6 +88,8 @@ export function AllowedTokensSelector({
     }
     return Array.from(groups.entries());
   }, [filtered]);
+  const allFilteredSelected =
+    filtered.length > 0 && filtered.every((token) => selected.has(toKey(token.address)));
 
   function toggle(address: string) {
     const key = toKey(address);
@@ -96,6 +98,14 @@ export function AllowedTokensSelector({
       return;
     }
     onChange([...value, address]);
+  }
+
+  function selectAllFiltered() {
+    const merged = new Map(value.map((entry) => [toKey(entry), entry]));
+    for (const token of filtered) {
+      merged.set(toKey(token.address), token.address);
+    }
+    onChange(Array.from(merged.values()));
   }
 
   return (
@@ -109,6 +119,24 @@ export function AllowedTokensSelector({
         placeholder="Search by symbol, name, chain, or address"
         disabled={disabled || loading}
       />
+      <div className="mt-2 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={selectAllFiltered}
+          disabled={disabled || loading || filtered.length === 0 || allFilteredSelected}
+          className="cursor-pointer text-xs font-medium text-zinc-600 underline underline-offset-2 hover:text-zinc-900 disabled:cursor-not-allowed disabled:text-zinc-400 dark:text-zinc-300 dark:hover:text-zinc-100 dark:disabled:text-zinc-600"
+        >
+          Select all
+        </button>
+        <button
+          type="button"
+          onClick={() => onChange([])}
+          disabled={disabled || loading || value.length === 0}
+          className="cursor-pointer text-xs font-medium text-zinc-600 underline underline-offset-2 hover:text-zinc-900 disabled:cursor-not-allowed disabled:text-zinc-400 dark:text-zinc-300 dark:hover:text-zinc-100 dark:disabled:text-zinc-600"
+        >
+          Clear all
+        </button>
+      </div>
       <ScrollArea className="mt-2 h-44 rounded-md border border-zinc-200 dark:border-zinc-800">
         <div className="p-2">
           {loading ? (

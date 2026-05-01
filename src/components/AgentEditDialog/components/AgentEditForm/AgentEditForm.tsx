@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { AllowedTokensSelector } from "@/components/AllowedTokensSelector";
 import { ConnectedAgentsSelector } from "@/components/ConnectedAgentsSelector";
+import { ToolsSelector } from "@/components/ToolsSelector";
 import { api } from "@/lib/api";
 import { Button } from "@/ui/Button";
 import { DialogFooter } from "@/ui/Dialog";
@@ -27,6 +28,7 @@ interface FormState {
   maxSlippageBps: number | null;
   intervalMin: number | null;
   allowedTokens: string[];
+  toolIds: string[];
   connectedAgentIds: string[];
 }
 
@@ -75,6 +77,7 @@ export function AgentEditForm({
     intervalMin:
       typeof agent.intervalMs === "number" ? agent.intervalMs / 60_000 : null,
     allowedTokens: agent.allowedTokens,
+    toolIds: [...agent.toolIds],
     connectedAgentIds: [...agent.connectedAgentIds],
   });
   useEffect(() => {
@@ -108,6 +111,7 @@ export function AgentEditForm({
         maxSlippageBps: state.maxSlippageBps!,
       },
       allowedTokens: state.allowedTokens,
+      toolIds: state.toolIds,
       connectedAgentIds: state.connectedAgentIds,
       intervalMs: Math.round(state.intervalMin! * 60_000),
     });
@@ -178,6 +182,17 @@ export function AgentEditForm({
         <AllowedTokensSelector
           value={state.allowedTokens}
           onChange={(allowedTokens) => setState((s) => ({ ...s, allowedTokens }))}
+          disabled={saving}
+        />
+      </Field>
+
+      <Field
+        label="Tools"
+        helper="Select tools available to this agent. Hover a tool to see its description."
+      >
+        <ToolsSelector
+          value={state.toolIds}
+          onChange={(toolIds) => setState((s) => ({ ...s, toolIds }))}
           disabled={saving}
         />
       </Field>

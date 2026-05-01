@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { AllowedTokensSelector } from "@/components/AllowedTokensSelector";
 import { ConnectedAgentsSelector } from "@/components/ConnectedAgentsSelector";
+import { ToolsSelector } from "@/components/ToolsSelector";
 import { Button } from "@/ui/Button";
 import { DialogFooter } from "@/ui/Dialog";
 import { Field } from "@/ui/Field";
@@ -28,6 +29,7 @@ interface FormState {
   maxSlippageBps: number | null;
   intervalMin: number | null;
   allowedTokens: string[];
+  toolIds: string[];
   connectedAgentIds: string[];
 }
 
@@ -49,6 +51,7 @@ const INITIAL: FormState = {
   maxSlippageBps: 50,
   intervalMin: 5,
   allowedTokens: [],
+  toolIds: [],
   connectedAgentIds: [],
 };
 
@@ -107,6 +110,7 @@ export function AgentCreateForm({
         maxSlippageBps: state.maxSlippageBps!,
       },
       allowedTokens: state.allowedTokens,
+      toolIds: state.toolIds,
       connectedAgentIds:
         state.connectedAgentIds.length > 0 ? state.connectedAgentIds : undefined,
       intervalMs: Math.round(state.intervalMin! * 60_000),
@@ -181,6 +185,17 @@ export function AgentCreateForm({
         <AllowedTokensSelector
           value={state.allowedTokens}
           onChange={(allowedTokens) => setState((s) => ({ ...s, allowedTokens }))}
+          disabled={creating}
+        />
+      </Field>
+
+      <Field
+        label="Tools"
+        helper="Select tools available to this agent. Hover a tool to see its description."
+      >
+        <ToolsSelector
+          value={state.toolIds}
+          onChange={(toolIds) => setState((s) => ({ ...s, toolIds }))}
           disabled={creating}
         />
       </Field>
