@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Spinner } from "@/ui/Spinner";
 import type { ActivityLogEntry } from "@/sdk";
 import { Composer } from "./components/Composer";
@@ -21,7 +21,7 @@ export function Chat({ agentId }: ChatProps) {
     useMessages(agentId);
   const { enqueue, error: enqueueError } = useEnqueueMessage(agentId);
 
-  const [activeTickId, setActiveTickId] = useState<string | null>(null);
+  const activeTickIdRef = useRef<string | null>(null);
   const [queueStatus, setQueueStatus] = useState<string | null>(null);
 
   const handleAppend = useCallback(
@@ -32,8 +32,8 @@ export function Chat({ agentId }: ChatProps) {
         entry.type === "llm_response" ||
         entry.type === "tool_result"
       ) {
-        if (entry.type === "tick_end" && activeTickId === entry.tickId) {
-          setActiveTickId(null);
+        if (entry.type === "tick_end" && activeTickIdRef.current === entry.tickId) {
+          activeTickIdRef.current = null;
         }
         refresh();
       }
@@ -41,7 +41,7 @@ export function Chat({ agentId }: ChatProps) {
         setQueueStatus(`error: ${String(entry.payload?.message ?? "unknown")}`);
       }
     },
-    [activeTickId, refresh],
+    [refresh],
   );
 
   const handleEphemeral = useCallback(
@@ -49,8 +49,9 @@ export function Chat({ agentId }: ChatProps) {
       if (payload.type === "token") {
         const text = (payload as { text?: unknown }).text;
         if (typeof text !== "string") return;
-        const tickId = activeTickId ?? `${STREAMING_TICK_PREFIX}${Date.now()}`;
-        if (!activeTickId) setActiveTickId(tickId);
+        const tickId =
+          activeTickIdRef.current ?? `${STREAMING_TICK_PREFIX}${Date.now()}`;
+        if (!activeTickIdRef.current) activeTickIdRef.current = tickId;
         upsertStreaming(tickId, (prev) => appendToken(prev, tickId, text));
         return;
       }
@@ -69,7 +70,7 @@ export function Chat({ agentId }: ChatProps) {
         return;
       }
     },
-    [activeTickId, upsertStreaming],
+    [upsertStreaming],
   );
 
   useAgentStream({ agentId, onAppend: handleAppend, onEphemeral: handleEphemeral });

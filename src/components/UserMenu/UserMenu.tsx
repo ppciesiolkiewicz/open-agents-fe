@@ -7,7 +7,7 @@ import { useMe } from "@/components/AuthGate";
 import { TransactionsDialog } from "@/components/Transactions";
 import { Dropdown, DropdownItem } from "@/ui/Dropdown";
 import { IconButton } from "@/ui/IconButton";
-import { CheckIcon, CopyIcon, InfoIcon, WalletIcon } from "@/ui/icons";
+import { CheckIcon, CopyIcon, PersonIcon } from "@/ui/icons";
 import { cn } from "@/lib/cn";
 import { truncateAmount } from "@/lib/formatBalance";
 import { toast } from "@/ui/Toast";
@@ -74,7 +74,7 @@ export function UserMenu() {
       trigger={
         <IconButton
           aria-label="Account menu"
-          icon={<WalletIcon />}
+          icon={<PersonIcon />}
           size="lg"
           variant="secondary"
           className="cursor-pointer"

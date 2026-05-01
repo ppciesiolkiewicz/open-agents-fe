@@ -3,6 +3,7 @@ export {
   StopIcon,
   GearIcon,
   WalletIcon,
+  PersonIcon,
   CopyIcon,
   CheckIcon,
   InfoIcon,

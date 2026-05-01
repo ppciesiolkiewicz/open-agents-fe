@@ -44,7 +44,6 @@ export function useMessages(agentId: string): UseMessagesResult {
   }, [agentId]);
 
   const refresh = useCallback(() => {
-    setLoading(true);
     api
       .agentsIdMessagesGet({ id: agentId, order: "asc", limit: 100 })
       .then((page) => {
@@ -53,8 +52,7 @@ export function useMessages(agentId: string): UseMessagesResult {
       })
       .catch((e) =>
         setError(e instanceof Error ? e.message : "Failed to load messages"),
-      )
-      .finally(() => setLoading(false));
+      );
   }, [agentId]);
 
   const appendLocal = useCallback((message: Message) => {

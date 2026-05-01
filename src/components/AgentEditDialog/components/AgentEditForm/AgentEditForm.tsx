@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import { AllowedTokensSelector } from "@/components/AllowedTokensSelector";
+import { ConnectedAgentsSelector } from "@/components/ConnectedAgentsSelector";
+import { api } from "@/lib/api";
 import { Button } from "@/ui/Button";
 import { DialogFooter } from "@/ui/Dialog";
 import { Field } from "@/ui/Field";
@@ -23,6 +26,8 @@ interface FormState {
   maxTradeUSD: number | null;
   maxSlippageBps: number | null;
   intervalMin: number | null;
+  allowedTokens: string[];
+  connectedAgentIds: string[];
 }
 
 interface FormErrors {
@@ -69,7 +74,26 @@ export function AgentEditForm({
     maxSlippageBps: agent.riskLimits.maxSlippageBps,
     intervalMin:
       typeof agent.intervalMs === "number" ? agent.intervalMs / 60_000 : null,
+    allowedTokens: agent.allowedTokens,
+    connectedAgentIds: [...agent.connectedAgentIds],
   });
+  useEffect(() => {
+    let active = true;
+    async function loadResolvedAllowedTokens() {
+      try {
+        const response = await api.agentsIdAllowedTokensGet({ id: agent.id });
+        if (!active) return;
+        const addresses = response.tokens.map((token) => token.address);
+        setState((current) => ({ ...current, allowedTokens: addresses }));
+      } catch {
+        // Keep existing values from AgentConfig when resolved endpoint fails.
+      }
+    }
+    void loadResolvedAllowedTokens();
+    return () => {
+      active = false;
+    };
+  }, [agent.id]);
   const errors = validate(state);
   const hasErrors = Object.keys(errors).length > 0;
 
@@ -83,6 +107,8 @@ export function AgentEditForm({
         maxTradeUSD: state.maxTradeUSD!,
         maxSlippageBps: state.maxSlippageBps!,
       },
+      allowedTokens: state.allowedTokens,
+      connectedAgentIds: state.connectedAgentIds,
       intervalMs: Math.round(state.intervalMin! * 60_000),
     });
   }
@@ -144,6 +170,28 @@ export function AgentEditForm({
           />
         </Field>
       </div>
+
+      <Field
+        label="Allowed tokens"
+        helper="Only selected tokens can be traded by this agent."
+      >
+        <AllowedTokensSelector
+          value={state.allowedTokens}
+          onChange={(allowedTokens) => setState((s) => ({ ...s, allowedTokens }))}
+          disabled={saving}
+        />
+      </Field>
+
+      <Field label="Connected agents">
+        <ConnectedAgentsSelector
+          value={state.connectedAgentIds}
+          onChange={(connectedAgentIds) =>
+            setState((s) => ({ ...s, connectedAgentIds }))
+          }
+          excludeAgentId={agent.id}
+          disabled={saving}
+        />
+      </Field>
 
       <Field
         label="Interval (min)"

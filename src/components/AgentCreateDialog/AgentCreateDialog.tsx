@@ -23,6 +23,7 @@ export function AgentCreateDialog({
       onOpenChange={onOpenChange}
       title="New agent"
       description="Configure a new runner. You can change name, prompt, risk limits, and interval later."
+      className="left-0 top-0 h-dvh w-screen max-h-dvh max-w-none translate-x-0 translate-y-0 rounded-none border-0 px-6 py-6 sm:px-10 sm:py-8 lg:px-16"
     >
       <AgentCreateForm
         creating={creating}

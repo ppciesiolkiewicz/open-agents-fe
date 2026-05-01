@@ -4,9 +4,11 @@ import Link from "next/link";
 import { use, useEffect, useState } from "react";
 import { AgentEditDialog } from "@/components/AgentEditDialog";
 import { AgentRunControl } from "@/components/AgentRunControl";
+import { AgentWalletPopover } from "@/components/AgentWalletPopover";
 import { Chat } from "@/components/Chat";
 import { api } from "@/lib/api";
 import type { AgentConfig } from "@/sdk";
+import { Badge } from "@/ui/Badge";
 import { IconButton } from "@/ui/IconButton";
 import { GearIcon } from "@/ui/icons";
 
@@ -46,12 +48,16 @@ export default function AgentChatPage({ params }: PageProps) {
           ← Agents
         </Link>
         {agent && (
-          <span className="truncate text-zinc-400">/ {agent.name}</span>
+          <>
+            <span className="truncate text-zinc-400">/ {agent.name}</span>
+            {agent.dryRun && <Badge tone="warning">dry run</Badge>}
+          </>
         )}
         {error && <span className="text-red-600">{error}</span>}
         <div className="flex-1" />
         {agent && (
           <>
+            <AgentWalletPopover />
             <IconButton
               aria-label="Edit agent"
               icon={<GearIcon />}

@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { AllowedTokensSelector } from "@/components/AllowedTokensSelector";
+import { ConnectedAgentsSelector } from "@/components/ConnectedAgentsSelector";
 import { Button } from "@/ui/Button";
 import { DialogFooter } from "@/ui/Dialog";
 import { Field } from "@/ui/Field";
@@ -25,6 +27,8 @@ interface FormState {
   maxTradeUSD: number | null;
   maxSlippageBps: number | null;
   intervalMin: number | null;
+  allowedTokens: string[];
+  connectedAgentIds: string[];
 }
 
 interface FormErrors {
@@ -44,6 +48,8 @@ const INITIAL: FormState = {
   maxTradeUSD: 100,
   maxSlippageBps: 50,
   intervalMin: 5,
+  allowedTokens: [],
+  connectedAgentIds: [],
 };
 
 function validate(state: FormState): FormErrors {
@@ -100,6 +106,9 @@ export function AgentCreateForm({
         maxTradeUSD: state.maxTradeUSD!,
         maxSlippageBps: state.maxSlippageBps!,
       },
+      allowedTokens: state.allowedTokens,
+      connectedAgentIds:
+        state.connectedAgentIds.length > 0 ? state.connectedAgentIds : undefined,
       intervalMs: Math.round(state.intervalMin! * 60_000),
     };
     onSubmit(body);
@@ -120,7 +129,7 @@ export function AgentCreateForm({
         label="System prompt"
         htmlFor="create-prompt"
         error={errors.prompt}
-        helper="What this agent should do — its role, goals, and any constraints. Sent at the start of every run."
+        helper="Describe how you want this agent to behave in plain language: what it should do, what to avoid, and your preferred style. Think of it like giving instructions to a teammate."
       >
         <Textarea
           id="create-prompt"
@@ -164,6 +173,27 @@ export function AgentCreateForm({
           />
         </Field>
       </div>
+
+      <Field
+        label="Allowed tokens"
+        helper="Only selected tokens can be traded by this agent."
+      >
+        <AllowedTokensSelector
+          value={state.allowedTokens}
+          onChange={(allowedTokens) => setState((s) => ({ ...s, allowedTokens }))}
+          disabled={creating}
+        />
+      </Field>
+
+      <Field label="Connected agents">
+        <ConnectedAgentsSelector
+          value={state.connectedAgentIds}
+          onChange={(connectedAgentIds) =>
+            setState((s) => ({ ...s, connectedAgentIds }))
+          }
+          disabled={creating}
+        />
+      </Field>
 
       <Field
         label="Interval (min)"

@@ -31,6 +31,9 @@ export function OnboardingGate({ children }: OnboardingGateProps) {
     setForceOpen(false);
     markCompleted();
   }, [markCompleted]);
+  const handleClose = useCallback(() => {
+    setForceOpen(false);
+  }, []);
 
   if (completed === null) {
     return (
@@ -44,7 +47,15 @@ export function OnboardingGate({ children }: OnboardingGateProps) {
 
   return (
     <OnboardingContext.Provider value={{ open }}>
-      {showOnboarding ? <Onboarding onDone={handleDone} /> : children}
+      {showOnboarding ? (
+        <Onboarding
+          onDone={handleDone}
+          onClose={handleClose}
+          closeable={forceOpen || completed}
+        />
+      ) : (
+        children
+      )}
     </OnboardingContext.Provider>
   );
 }

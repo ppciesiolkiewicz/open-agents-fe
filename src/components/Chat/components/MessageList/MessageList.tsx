@@ -12,6 +12,7 @@ export interface MessageListProps {
 
 export function MessageList({ messages, emptyHint }: MessageListProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
+  const stickToBottomRef = useRef(true);
 
   const { renderable, resultsByCallId } = useMemo(() => {
     const resultsByCallId = new Map<string, string>();
@@ -29,6 +30,22 @@ export function MessageList({ messages, emptyHint }: MessageListProps) {
   useEffect(() => {
     const el = viewportRef.current;
     if (!el) return;
+    const thresholdPx = 40;
+    const handleScroll = () => {
+      const distanceFromBottom = el.scrollHeight - (el.scrollTop + el.clientHeight);
+      stickToBottomRef.current = distanceFromBottom <= thresholdPx;
+    };
+    handleScroll();
+    el.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      el.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+    if (!stickToBottomRef.current) return;
     el.scrollTo({ top: el.scrollHeight });
   }, [messages]);
 
