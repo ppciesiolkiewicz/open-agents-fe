@@ -4,7 +4,7 @@ import { ZeroGPurchaseStatusEnum, type ZeroGPurchase } from "@/sdk";
 import { Dialog } from "@/ui/Dialog";
 import { Spinner } from "@/ui/Spinner";
 import { cn } from "@/lib/cn";
-import { truncateAmount } from "@/lib/formatBalance";
+import { formatBaseUnits, OG_DECIMALS, USDC_DECIMALS } from "@/lib/formatBalance";
 import { useTransactionsContext } from "../TransactionsProvider";
 import { isTerminal, STATUS_LABEL } from "../utils/status";
 
@@ -42,7 +42,7 @@ function PurchaseRow({ purchase }: { purchase: ZeroGPurchase }) {
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col">
           <span className="font-mono text-sm text-zinc-900 dark:text-zinc-100">
-            {truncateAmount(purchase.incomingUsdcAmount)} USDC
+            {formatBaseUnits(purchase.incomingUsdcAmount, USDC_DECIMALS)} USDC
           </span>
           <span className="text-xs text-zinc-500 dark:text-zinc-400">
             {created}
@@ -55,7 +55,7 @@ function PurchaseRow({ purchase }: { purchase: ZeroGPurchase }) {
           <div className="text-xs text-zinc-500 dark:text-zinc-400">
             Received{" "}
             <span className="font-mono text-zinc-900 dark:text-zinc-100">
-              {truncateAmount(purchase.ogAmountSentToUser)} 0G
+              {formatBaseUnits(purchase.ogAmountSentToUser, OG_DECIMALS)} 0G
             </span>
           </div>
         )}

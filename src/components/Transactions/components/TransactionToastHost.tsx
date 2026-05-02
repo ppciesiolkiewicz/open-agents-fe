@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { ZeroGPurchaseStatusEnum, type ZeroGPurchase } from "@/sdk";
 import { cn } from "@/lib/cn";
-import { truncateAmount } from "@/lib/formatBalance";
+import { formatBaseUnits, USDC_DECIMALS } from "@/lib/formatBalance";
 import { IconButton } from "@/ui/IconButton";
 import { useTransactionsContext } from "../TransactionsProvider";
 import { isTerminal, STATUS_LABEL, STEPS, stepIndex } from "../utils/status";
@@ -106,7 +106,7 @@ export function TransactionToastHost() {
       <div className="mt-3 flex items-center justify-between gap-3 rounded-md bg-zinc-50 px-3 py-2 dark:bg-zinc-900">
         <span className="text-xs text-zinc-500 dark:text-zinc-400">Amount</span>
         <span className="font-mono text-sm text-zinc-900 dark:text-zinc-100">
-          {truncateAmount(purchase.incomingUsdcAmount)} USDC
+          {formatBaseUnits(purchase.incomingUsdcAmount, USDC_DECIMALS)} USDC
         </span>
       </div>
 
