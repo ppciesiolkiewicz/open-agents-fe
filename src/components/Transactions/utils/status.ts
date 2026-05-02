@@ -5,7 +5,6 @@ export const STEPS: ReadonlyArray<{
   label: string;
 }> = [
   { key: ZeroGPurchaseStatusEnum.Pending, label: "Confirming" },
-  { key: ZeroGPurchaseStatusEnum.Bridging, label: "Bridging" },
   { key: ZeroGPurchaseStatusEnum.Swapping, label: "Swapping" },
   { key: ZeroGPurchaseStatusEnum.Sending, label: "Sending" },
   { key: ZeroGPurchaseStatusEnum.ToppingUp, label: "Topping up" },
