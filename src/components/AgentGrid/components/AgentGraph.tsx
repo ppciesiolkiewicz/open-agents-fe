@@ -400,8 +400,27 @@ function AgentNode({ data }: { data: GraphAgentNodeData }) {
 }
 
 function ChannelNode({ data }: { data: GraphChannelNodeData }) {
+  const queryClient = useQueryClient();
   const channel = data.channel;
   const members = channel.memberAgentIds.length;
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const deleteChannel = useCallback(async () => {
+    if (deleting) return;
+    setDeleteError(null);
+    setDeleting(true);
+    try {
+      await api.axlChannelsIdDelete({ id: channel.id });
+      invalidateAgentsAndChannelsQueries(queryClient);
+    } catch (e) {
+      setDeleteError(e instanceof Error ? e.message : "Failed to delete channel");
+    } finally {
+      setDeleting(false);
+    }
+  }, [channel.id, deleting, queryClient]);
+
   return (
     <div className="relative min-w-52 rounded-lg border border-amber-400 bg-amber-50 p-3 shadow-sm dark:border-amber-700 dark:bg-amber-950/35">
       <Handle
@@ -414,12 +433,35 @@ function ChannelNode({ data }: { data: GraphChannelNodeData }) {
         position={Position.Right}
         className="!size-2.5 !border-amber-500 !bg-amber-300 dark:!border-amber-600 dark:!bg-amber-700"
       />
-      <div className="mb-1 truncate text-sm font-semibold text-amber-950 dark:text-amber-200">
-        #{channel.name}
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <div className="truncate text-sm font-semibold text-amber-950 dark:text-amber-200">
+          #{channel.name}
+        </div>
+        <button
+          type="button"
+          className="nodrag nopan inline-flex size-6 cursor-pointer items-center justify-center rounded-md border border-amber-300 bg-amber-50 text-sm text-amber-600 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:border-amber-700 dark:bg-amber-950/35 dark:text-amber-400 dark:hover:border-red-800 dark:hover:bg-red-950/50 dark:hover:text-red-300"
+          aria-label={`Delete ${channel.name}`}
+          title={`Delete ${channel.name}`}
+          onClick={() => { setDeleteError(null); setConfirmDeleteOpen(true); }}
+          disabled={deleting}
+        >
+          {deleting ? <Spinner size="sm" aria-label="Deleting channel" /> : "×"}
+        </button>
       </div>
       <div className="text-xs text-amber-900 dark:text-amber-300/90">
         {members} member{members === 1 ? "" : "s"}
       </div>
+      {deleteError && (
+        <p className="mt-2 text-xs text-red-600 dark:text-red-400">{deleteError}</p>
+      )}
+      <ConfirmDialog
+        open={confirmDeleteOpen}
+        onOpenChange={setConfirmDeleteOpen}
+        title={`Delete "#${channel.name}"?`}
+        description="This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={deleteChannel}
+      />
     </div>
   );
 }
