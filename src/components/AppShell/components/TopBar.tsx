@@ -12,7 +12,7 @@ export function TopBar() {
         href="/agents"
         className="text-lg font-bold tracking-tight text-zinc-900 hover:underline underline-offset-2 dark:text-zinc-100"
       >
-        Cadence
+        Agora
       </Link>
       <div className="flex items-center gap-2">
         <BalancePill />
