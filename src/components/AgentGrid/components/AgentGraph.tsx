@@ -26,6 +26,7 @@ import { invalidateAgentsAndChannelsQueries } from "@/lib/agentsQuery";
 import type { AgentConfig, AxlChannel } from "@/sdk";
 import { Badge } from "@/ui/Badge";
 import { Button } from "@/ui/Button";
+import { ConfirmDialog } from "@/ui/ConfirmDialog";
 import { GearIcon, PlayIcon } from "@/ui/icons";
 import { Spinner } from "@/ui/Spinner";
 
@@ -225,6 +226,7 @@ function AgentNode({ data }: { data: GraphAgentNodeData }) {
   const [openingConfig, setOpeningConfig] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   const startAgent = useCallback(async () => {
     if (running || starting) return;
@@ -255,11 +257,6 @@ function AgentNode({ data }: { data: GraphAgentNodeData }) {
 
   const deleteAgent = useCallback(async () => {
     if (deleting) return;
-    const confirmed = window.confirm(
-      `Delete "${agent.name}"? This action cannot be undone.`,
-    );
-    if (!confirmed) return;
-
     setDeleteError(null);
     setDeleting(true);
     try {
@@ -270,7 +267,7 @@ function AgentNode({ data }: { data: GraphAgentNodeData }) {
     } finally {
       setDeleting(false);
     }
-  }, [agent.id, agent.name, deleting, queryClient]);
+  }, [agent.id, deleting, queryClient]);
 
   const fullPrompt = agent.prompt.trim() || "No prompt";
   const promptPreview = truncateText(fullPrompt, 50);
@@ -301,7 +298,7 @@ function AgentNode({ data }: { data: GraphAgentNodeData }) {
             className="nodrag nopan inline-flex size-6 cursor-pointer items-center justify-center rounded-md border border-zinc-300 bg-white text-sm text-zinc-500 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:border-red-800 dark:hover:bg-red-950/50 dark:hover:text-red-300"
             aria-label={`Delete ${agent.name}`}
             title={`Delete ${agent.name}`}
-            onClick={deleteAgent}
+            onClick={() => setConfirmDeleteOpen(true)}
             disabled={deleting}
           >
             {deleting ? <Spinner size="sm" aria-label="Deleting agent" /> : "×"}
@@ -389,6 +386,14 @@ function AgentNode({ data }: { data: GraphAgentNodeData }) {
           setEditedAgent(next);
           setRunningOverride(Boolean(next.running));
         }}
+      />
+      <ConfirmDialog
+        open={confirmDeleteOpen}
+        onOpenChange={setConfirmDeleteOpen}
+        title={`Delete "${agent.name}"?`}
+        description="This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={deleteAgent}
       />
     </div>
   );
