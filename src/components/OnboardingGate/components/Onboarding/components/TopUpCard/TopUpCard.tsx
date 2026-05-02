@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { buildTransakUrl } from "@/lib/transak";
+import { buildOnchainMoneyUrl } from "@/lib/onchainMoney";
 import { truncateAmount } from "@/lib/formatBalance";
 import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
@@ -64,7 +64,7 @@ export function TopUpCard({ wallet }: TopUpCardProps) {
         {wallet ? (
           <Button asChild className="w-full">
             <a
-              href={buildTransakUrl(wallet.walletAddress)}
+              href={buildOnchainMoneyUrl(wallet.walletAddress)}
               target="_blank"
               rel="noopener noreferrer"
             >

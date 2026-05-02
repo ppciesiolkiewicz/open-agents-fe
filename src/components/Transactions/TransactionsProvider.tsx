@@ -5,7 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useRef,
+  useMemo,
   useState,
   type ReactNode,
 } from "react";
@@ -13,7 +13,7 @@ import { api } from "@/lib/api";
 import type { ZeroGPurchase } from "@/sdk";
 import { isTerminal } from "./utils/status";
 
-const POLL_INTERVAL_MS = 5000;
+const POLL_INTERVAL_MS = 1000;
 
 interface TransactionsContextValue {
   purchases: ZeroGPurchase[];
@@ -22,6 +22,7 @@ interface TransactionsContextValue {
   trackNewDeposit: () => Promise<void>;
   refresh: () => Promise<void>;
   loading: boolean;
+  upsertPurchase: (purchase: ZeroGPurchase) => void;
 }
 
 const TransactionsContext = createContext<TransactionsContextValue | null>(null);
@@ -54,8 +55,15 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
   const [purchases, setPurchases] = useState<ZeroGPurchase[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const purchasesRef = useRef(purchases);
-  purchasesRef.current = purchases;
+
+  const upsertPurchase = useCallback((purchase: ZeroGPurchase) => {
+    setPurchases((prev) => mergePurchases(prev, [purchase]));
+  }, []);
+
+  const hasInProgress = useMemo(
+    () => purchases.some((p) => !isTerminal(p.status)),
+    [purchases],
+  );
 
   const fetchAll = useCallback(async () => {
     const res = await api.usersMeTreasuryPurchasesGet({});
@@ -83,42 +91,43 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
 
   useEffect(() => {
     let cancelled = false;
+    void (async () => {
+      try {
+        const items = await fetchAll();
+        if (cancelled) return;
+        const firstInProgress = items.find((p) => !isTerminal(p.status));
+        if (firstInProgress) setActiveId(firstInProgress.id);
+      } catch {
+        /* ignore — polling effect will retry */
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchAll]);
+
+  useEffect(() => {
+    if (!hasInProgress) return;
+    let cancelled = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
 
     async function tick() {
       try {
-        const items = await fetchAll();
-        if (cancelled) return;
-        if (items.some((p) => !isTerminal(p.status))) {
-          timer = setTimeout(tick, POLL_INTERVAL_MS);
-        }
-      } catch {
-        if (!cancelled) timer = setTimeout(tick, POLL_INTERVAL_MS);
-      }
-    }
-
-    void (async () => {
-      try {
         await fetchAll();
       } catch {
-        if (!cancelled) timer = setTimeout(tick, POLL_INTERVAL_MS);
-      } finally {
-        if (!cancelled) setLoading(false);
+        /* swallow — schedule next attempt */
       }
-      if (cancelled) return;
-      const list = purchasesRef.current;
-      const firstInProgress = list.find((p) => !isTerminal(p.status));
-      if (firstInProgress) setActiveId(firstInProgress.id);
-      if (list.some((p) => !isTerminal(p.status))) {
-        timer = setTimeout(tick, POLL_INTERVAL_MS);
-      }
-    })();
+      if (!cancelled) timer = setTimeout(tick, POLL_INTERVAL_MS);
+    }
 
+    timer = setTimeout(tick, POLL_INTERVAL_MS);
     return () => {
       cancelled = true;
       if (timer) clearTimeout(timer);
     };
-  }, [fetchAll]);
+  }, [hasInProgress, fetchAll]);
 
   return (
     <TransactionsContext.Provider
@@ -129,6 +138,7 @@ export function TransactionsProvider({ children }: TransactionsProviderProps) {
         trackNewDeposit,
         refresh,
         loading,
+        upsertPurchase,
       }}
     >
       {children}

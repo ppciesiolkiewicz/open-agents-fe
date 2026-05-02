@@ -7,6 +7,12 @@ import { Button } from "@/ui/Button";
 import { Card } from "@/ui/Card";
 import { NumberInput } from "@/ui/NumberInput";
 
+const USE_FAKE_DEPOSIT = true;
+
+export interface BuyCreditsCardProps {
+  onSuccess?: () => void;
+}
+
 type Status =
   | { kind: "idle" }
   | { kind: "loading" }
@@ -18,20 +24,33 @@ function shortHash(hash: string): string {
   return `${hash.slice(0, 8)}…${hash.slice(-6)}`;
 }
 
-export function BuyCreditsCard() {
+export function BuyCreditsCard({ onSuccess }: BuyCreditsCardProps = {}) {
   const [amount, setAmount] = useState<number | null>(null);
   const [status, setStatus] = useState<Status>({ kind: "idle" });
-  const { trackNewDeposit } = useTransactions();
+  const { trackNewDeposit, upsertPurchase, setActiveId } = useTransactions();
 
   async function handleSubmit() {
     if (amount === null || amount <= 0) return;
     setStatus({ kind: "loading" });
     try {
-      const res = await api.usersMeTreasuryDepositPost({
-        treasuryDepositBody: { amount: String(amount) },
-      });
-      setStatus({ kind: "success", txHash: res.txHash });
-      void trackNewDeposit();
+      let txHash: string;
+      if (USE_FAKE_DEPOSIT) {
+        const purchase = await api.usersMeTreasuryPurchasesFakePost({
+          fakePurchaseBody: { amount: String(amount) },
+        });
+        upsertPurchase(purchase);
+        setActiveId(purchase.id);
+        void trackNewDeposit();
+        txHash = purchase.incomingTxHash;
+      } else {
+        const res = await api.usersMeTreasuryDepositPost({
+          treasuryDepositBody: { amount: String(amount) },
+        });
+        void trackNewDeposit();
+        txHash = res.txHash;
+      }
+      setStatus({ kind: "success", txHash });
+      onSuccess?.();
     } catch (e) {
       setStatus({
         kind: "error",
@@ -67,7 +86,6 @@ export function BuyCreditsCard() {
             className="flex-1"
           />
           <Button
-            variant="secondary"
             onClick={() => void handleSubmit()}
             disabled={submitDisabled}
             loading={status.kind === "loading"}

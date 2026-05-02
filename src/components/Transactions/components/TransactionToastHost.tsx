@@ -78,7 +78,7 @@ export function TransactionToastHost() {
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-4 right-4 z-50 w-full max-w-md rounded-xl border border-zinc-200 bg-white p-4 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950"
+      className="fixed bottom-4 right-4 z-9999 w-full max-w-md rounded-xl border border-zinc-200 bg-white p-4 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-0.5">

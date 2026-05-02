@@ -32,9 +32,14 @@ export function Onboarding({ onDone, onClose, closeable = false }: OnboardingPro
       <div className="flex w-full max-w-2xl flex-col gap-4">
         <WelcomeCard />
         <TopUpCard wallet={wallet} />
-        <BuyCreditsCard />
-        <Button size="lg" onClick={onDone} className="self-end">
-          Get started
+        <BuyCreditsCard onSuccess={onDone} />
+        <Button
+          size="lg"
+          variant="ghost"
+          onClick={onDone}
+          className="self-end"
+        >
+          Skip for now
         </Button>
       </div>
     </div>
