@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { AllowedTokensSelector } from "@/components/AllowedTokensSelector";
 import { ConnectedAgentsSelector } from "@/components/ConnectedAgentsSelector";
+import { ConnectedChannelsSelector } from "@/components/ConnectedChannelsSelector";
 import { ToolsSelector } from "@/components/ToolsSelector";
 import { Button } from "@/ui/Button";
 import { DialogFooter } from "@/ui/Dialog";
@@ -31,6 +32,7 @@ interface FormState {
   allowedTokens: string[];
   toolIds: string[];
   connectedAgentIds: string[];
+  connectedChannelIds: string[];
 }
 
 interface FormErrors {
@@ -53,6 +55,7 @@ const INITIAL: FormState = {
   allowedTokens: [],
   toolIds: [],
   connectedAgentIds: [],
+  connectedChannelIds: [],
 };
 
 function validate(state: FormState): FormErrors {
@@ -113,6 +116,10 @@ export function AgentCreateForm({
       toolIds: state.toolIds,
       connectedAgentIds:
         state.connectedAgentIds.length > 0 ? state.connectedAgentIds : undefined,
+      connectedChannelIds:
+        state.connectedChannelIds.length > 0
+          ? state.connectedChannelIds
+          : undefined,
       intervalMs: Math.round(state.intervalMin! * 60_000),
     };
     onSubmit(body);
@@ -205,6 +212,16 @@ export function AgentCreateForm({
           value={state.connectedAgentIds}
           onChange={(connectedAgentIds) =>
             setState((s) => ({ ...s, connectedAgentIds }))
+          }
+          disabled={creating}
+        />
+      </Field>
+
+      <Field label="Connected channels">
+        <ConnectedChannelsSelector
+          value={state.connectedChannelIds}
+          onChange={(connectedChannelIds) =>
+            setState((s) => ({ ...s, connectedChannelIds }))
           }
           disabled={creating}
         />

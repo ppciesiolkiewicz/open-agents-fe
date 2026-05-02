@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { AllowedTokensSelector } from "@/components/AllowedTokensSelector";
 import { ConnectedAgentsSelector } from "@/components/ConnectedAgentsSelector";
+import { ConnectedChannelsSelector } from "@/components/ConnectedChannelsSelector";
 import { ToolsSelector } from "@/components/ToolsSelector";
 import { api } from "@/lib/api";
 import { Button } from "@/ui/Button";
@@ -30,6 +31,7 @@ interface FormState {
   allowedTokens: string[];
   toolIds: string[];
   connectedAgentIds: string[];
+  connectedChannelIds: string[];
 }
 
 interface FormErrors {
@@ -79,6 +81,7 @@ export function AgentEditForm({
     allowedTokens: agent.allowedTokens,
     toolIds: [...agent.toolIds],
     connectedAgentIds: [...agent.connectedAgentIds],
+    connectedChannelIds: [...agent.connectedChannelIds],
   });
   useEffect(() => {
     let active = true;
@@ -113,6 +116,7 @@ export function AgentEditForm({
       allowedTokens: state.allowedTokens,
       toolIds: state.toolIds,
       connectedAgentIds: state.connectedAgentIds,
+      connectedChannelIds: state.connectedChannelIds,
       intervalMs: Math.round(state.intervalMin! * 60_000),
     });
   }
@@ -204,6 +208,16 @@ export function AgentEditForm({
             setState((s) => ({ ...s, connectedAgentIds }))
           }
           excludeAgentId={agent.id}
+          disabled={saving}
+        />
+      </Field>
+
+      <Field label="Connected channels">
+        <ConnectedChannelsSelector
+          value={state.connectedChannelIds}
+          onChange={(connectedChannelIds) =>
+            setState((s) => ({ ...s, connectedChannelIds }))
+          }
           disabled={saving}
         />
       </Field>
