@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "generate:sdk": "openapi-generator-cli generate -g typescript-fetch -o src/sdk -i ${OPENAPI_URL:-http://localhost:3000/openapi.json}"
+    "generate:sdk": "openapi-generator-cli generate -g typescript-fetch -o src/sdk -i ${OPENAPI_URL:-http://localhost:3000/openapi.json}",
+    "generate:brand": "node scripts/generate-brand-images.mjs"
   },
   "dependencies": {
     "@privy-io/react-auth": "^3.22.2",
