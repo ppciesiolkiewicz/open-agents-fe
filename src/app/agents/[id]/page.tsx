@@ -10,6 +10,7 @@ import { Chat } from "@/components/Chat";
 import { api } from "@/lib/api";
 import type { AgentConfig } from "@/sdk";
 import { Badge } from "@/ui/Badge";
+import { ConfirmDialog } from "@/ui/ConfirmDialog";
 import { IconButton } from "@/ui/IconButton";
 import { BinIcon, GearIcon } from "@/ui/icons";
 
@@ -24,6 +25,7 @@ export default function AgentChatPage({ params }: PageProps) {
   const [error, setError] = useState<string | null>(null);
   const [editOpen, setEditOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -43,11 +45,6 @@ export default function AgentChatPage({ params }: PageProps) {
 
   const deleteAgent = async () => {
     if (!agent || deleting) return;
-    const confirmed = window.confirm(
-      `Delete "${agent.name}"? This action cannot be undone.`,
-    );
-    if (!confirmed) return;
-
     setDeleting(true);
     setError(null);
     try {
@@ -84,7 +81,7 @@ export default function AgentChatPage({ params }: PageProps) {
               icon={<BinIcon />}
               size="lg"
               variant="danger"
-              onClick={deleteAgent}
+              onClick={() => setConfirmDeleteOpen(true)}
               loading={deleting}
             />
             <IconButton
@@ -102,12 +99,22 @@ export default function AgentChatPage({ params }: PageProps) {
         <Chat agentId={id} />
       </div>
       {agent && (
-        <AgentEditDialog
-          agent={agent}
-          open={editOpen}
-          onOpenChange={setEditOpen}
-          onSaved={setAgent}
-        />
+        <>
+          <AgentEditDialog
+            agent={agent}
+            open={editOpen}
+            onOpenChange={setEditOpen}
+            onSaved={setAgent}
+          />
+          <ConfirmDialog
+            open={confirmDeleteOpen}
+            onOpenChange={setConfirmDeleteOpen}
+            title={`Delete "${agent.name}"?`}
+            description="This action cannot be undone."
+            confirmLabel="Delete"
+            onConfirm={deleteAgent}
+          />
+        </>
       )}
     </div>
   );
