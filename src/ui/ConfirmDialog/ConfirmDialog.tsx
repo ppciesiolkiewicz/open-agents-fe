@@ -10,7 +10,7 @@ export interface ConfirmDialogProps {
   description?: string;
   confirmLabel?: string;
   cancelLabel?: string;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
 }
 
 export function ConfirmDialog({
@@ -18,7 +18,7 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = "Delete",
+  confirmLabel = "Confirm",
   cancelLabel = "Cancel",
   onConfirm,
 }: ConfirmDialogProps) {
@@ -37,7 +37,7 @@ export function ConfirmDialog({
           variant="danger"
           onClick={() => {
             onOpenChange(false);
-            onConfirm();
+            void onConfirm();
           }}
         >
           {confirmLabel}
